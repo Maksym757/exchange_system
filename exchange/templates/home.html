@@ -1,0 +1,2055 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Обмін валют у {{ city }} | Система обміну валют</title>
+<style>
+:root{
+  --ink:#14213d;
+  --muted:#55657a;
+  --navy:#16324f;
+  --navy-soft:#214d77;
+  --amber:#d89b2b;
+  --amber-soft:rgba(216,155,43,.16);
+  --teal:#0d8b78;
+  --teal-soft:rgba(13,139,120,.12);
+  --sky:#2196c9;
+  --sky-soft:rgba(33,150,201,.14);
+  --rose:#d85f72;
+  --rose-soft:rgba(216,95,114,.14);
+  --card:rgba(255,255,255,.94);
+  --line:rgba(20,33,61,.1);
+  --shadow:rgba(13,28,52,.14);
+  --header-bg:#16324f;
+  --header-bg-deep:#102842;
+  --header-accent:#ffd36b;
+  --header-accent-strong:#fff3bf;
+  --header-panel:#112338;
+  --header-pill:#27a5d9;
+  --header-pill-hover:#1b8fbe;
+  --header-text:#f6fbff;
+  --header-text-soft:rgba(246,251,255,.82);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  margin:0;
+  color:var(--ink);
+  font:16px/1.65 "Segoe UI Variable","Trebuchet MS",sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(255,211,107,.2),transparent 26%),
+    radial-gradient(circle at top right,rgba(33,150,201,.18),transparent 28%),
+    linear-gradient(180deg,#fff8ee 0%,#eef7f6 48%,#f7f8fc 100%);
+}
+a{color:inherit;text-decoration:none}
+main{padding-bottom:46px}
+section[id]{scroll-margin-top:24px}
+.quick,
+.section,
+.site-footer{
+  content-visibility:auto;
+  contain-intrinsic-size:1px 720px;
+}
+.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto}
+.site-header{
+  position:relative;
+  z-index:20;
+  background:linear-gradient(180deg,var(--header-bg),var(--header-bg-deep));
+  border-bottom:4px solid var(--header-accent);
+  box-shadow:0 16px 30px rgba(10,20,35,.12);
+}
+.header-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:28px;
+  min-height:96px;
+}
+.brand-lockup{
+  display:flex;
+  align-items:center;
+  padding-right:28px;
+  border-right:1px solid rgba(255,255,255,.72);
+}
+.brand-logo{
+  display:inline-block;
+  color:var(--header-accent-strong);
+  font:900 clamp(52px,6vw,74px)/.78 "Bahnschrift SemiBold","Arial Narrow","Trebuchet MS",sans-serif;
+  letter-spacing:-.11em;
+  text-transform:uppercase;
+  transform:skew(-11deg);
+}
+.header-contact{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  min-width:0;
+  color:var(--header-text);
+}
+.header-phone-icon{
+  color:rgba(255,255,255,.86);
+  font-size:22px;
+  line-height:1;
+}
+.header-service-links{
+  display:grid;
+  gap:4px;
+}
+.header-service-links a{
+  color:var(--header-text);
+  font-size:14px;
+  font-weight:800;
+}
+.header-service-links a:hover{text-decoration:none}
+.header-phone-block{
+  display:grid;
+  gap:4px;
+  justify-items:start;
+}
+.header-phone-trigger,
+.header-phone-value{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0;
+  border:0;
+  background:none;
+  color:var(--header-text);
+  font:800 14px/1.2 inherit;
+}
+.header-phone-trigger{cursor:pointer}
+.header-phone-trigger:hover,
+.header-phone-value:hover{color:var(--header-accent-strong)}
+.header-phone-prefix{
+  color:rgba(255,255,255,.64);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.header-phone-value{
+  font-size:15px;
+  font-weight:800;
+}
+.header-cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  min-height:58px;
+  padding:0 28px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.88);
+  background:linear-gradient(180deg,var(--header-pill),#3799c7);
+  color:#fff;
+  font-size:17px;
+  font-weight:800;
+  white-space:nowrap;
+  box-shadow:0 12px 24px rgba(21,54,76,.2);
+}
+.header-cta:hover{
+  background:linear-gradient(180deg,#58b7e4,var(--header-pill-hover));
+  transform:translateY(-1px);
+}
+.header-cta-icon{
+  display:inline-grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(255,255,255,.14);
+  font-size:18px;
+}
+.header-actions{
+  display:flex;
+  align-items:center;
+  justify-self:end;
+  gap:24px;
+}
+.lang-switch{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px;
+  border-radius:16px;
+  background:var(--header-panel);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.lang-switch button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:42px;
+  min-height:32px;
+  padding:0 12px;
+  border:0;
+  border-radius:11px;
+  background:none;
+  color:var(--header-text-soft);
+  font:inherit;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.lang-switch .active{
+  background:#fff;
+  color:#1f2324;
+}
+.auth-links{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--header-text);
+}
+.auth-links a{
+  color:var(--header-text);
+  font-size:15px;
+  font-weight:800;
+}
+.auth-links a:hover{color:var(--header-accent-strong)}
+.auth-links span{
+  color:rgba(255,255,255,.48);
+  font-weight:700;
+}
+.header-search-shell{
+  padding:18px 0 22px;
+  background:linear-gradient(90deg,rgba(255,235,194,.94),rgba(227,245,251,.94));
+  border-top:1px solid rgba(255,211,107,.24);
+  border-bottom:1px solid rgba(22,50,79,.08);
+}
+.header-search{
+  display:grid;
+  gap:12px;
+  max-width:980px;
+  margin:0 auto;
+}
+.header-search label{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:rgba(20,33,61,.7);
+}
+.header-search input{
+  width:100%;
+  min-height:58px;
+  border:1px solid rgba(22,50,79,.12);
+  border-radius:20px;
+  background:rgba(255,255,255,.76);
+  padding:0 18px;
+  color:var(--navy);
+  font:inherit;
+  box-shadow:0 16px 28px rgba(20,33,61,.08);
+}
+.header-search input::placeholder{
+  color:rgba(20,33,61,.42);
+}
+.header-search-results{
+  display:grid;
+  gap:8px;
+}
+.search-rate-item,
+.header-search-empty{
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(22,50,79,.08);
+  box-shadow:0 14px 24px rgba(20,33,61,.06);
+}
+.search-rate-item{
+  display:grid;
+  gap:6px;
+  color:var(--navy);
+}
+.search-rate-item strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:15px;
+}
+.search-rate-item span{
+  font-size:13px;
+  color:var(--muted);
+}
+.header-search-empty{
+  color:var(--muted);
+  font-size:14px;
+}
+.manager-queue{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+.manager-order{
+  align-content:start;
+}
+.manager-order p{
+  margin:0;
+  color:var(--muted);
+}
+.manager-order-meta{
+  display:grid;
+  gap:10px;
+  margin-top:16px;
+}
+.manager-order-meta div{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(16,33,58,.04);
+}
+.manager-order-meta span{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.manager-order-meta strong{
+  margin:0;
+  font-size:18px;
+  color:var(--navy);
+}
+.manager-order-actions{
+  margin-top:18px;
+}
+.hero{padding:28px 0 18px}
+.hero-shell{
+  position:relative;
+  padding:18px;
+  border-radius:40px;
+  background:
+    radial-gradient(circle at top right,rgba(255,211,107,.18),transparent 24%),
+    linear-gradient(135deg,rgba(22,50,79,.98),rgba(17,67,103,.95) 56%,rgba(13,139,120,.92));
+  box-shadow:0 30px 70px rgba(10,20,35,.18);
+  overflow:hidden;
+}
+.hero-shell:before,
+.hero-shell:after{
+  content:none;
+}
+.hero-ribbon{
+  position:relative;
+  z-index:1;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.hero-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.88);
+  font-size:13px;
+  font-weight:700;
+}
+.hero-chip strong{color:#fff}
+.hero-chip.call{
+  background:rgba(211,162,61,.18);
+  color:#ffefc8;
+}
+.hero-stage{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);
+  gap:22px;
+}
+.panel,
+.quote,
+.sectionbox,
+.box,
+.card,
+.contact,
+.side{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:0 22px 44px var(--shadow);
+}
+.panel,
+.card{
+  border-radius:30px;
+  padding:34px;
+}
+.panel{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top right,rgba(255,211,107,.18),transparent 22%),
+    linear-gradient(160deg,rgba(255,255,255,.98),rgba(241,249,248,.96));
+}
+.panel:after{
+  content:none;
+}
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  padding:9px 14px;
+  border-radius:999px;
+  background:var(--amber-soft);
+  color:#845b08;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.eyebrow.inverse{
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.88);
+}
+.hero h1,
+.section h2,
+.contact h2,
+.card h2{
+  font-family:Georgia,"Times New Roman",serif;
+}
+.hero h1{
+  margin:18px 0 14px;
+  max-width:11ch;
+  font-size:clamp(40px,5vw,66px);
+  line-height:.95;
+  color:var(--navy);
+}
+.hero p{
+  margin:0;
+  max-width:62ch;
+  font-size:17px;
+  color:var(--muted);
+}
+.tags,
+.actions,
+.quotes,
+.grid3,
+.contactmeta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.tags{
+  margin:22px 0 0;
+  padding:0;
+  list-style:none;
+  gap:10px;
+}
+.tags a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:0 18px;
+  border-radius:999px;
+  border:1px solid rgba(20,33,61,.08);
+  background:#fff;
+  color:var(--navy);
+  font-size:15px;
+  font-weight:800;
+  box-shadow:0 14px 24px rgba(20,33,61,.08);
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.tags a:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 30px rgba(20,33,61,.12);
+}
+.service-tag-cash{
+  background:linear-gradient(180deg,#fff6e4,#fffdf7);
+  color:#855200;
+}
+.service-tag-rates{
+  background:linear-gradient(180deg,#eaf7ff,#f9fdff);
+  color:#145d84;
+}
+.service-tag-cross{
+  background:linear-gradient(180deg,#e9fbf7,#fbfefd);
+  color:#0a6d5e;
+}
+.service-tag-orders{
+  background:linear-gradient(180deg,#fff0f2,#fff8f9);
+  color:#9f3149;
+}
+.btn,
+.access a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:0 18px;
+  border-radius:18px;
+  font-weight:800;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.btn:hover,
+.access a:hover{
+  transform:translateY(-2px);
+}
+.btn.primary{
+  background:linear-gradient(135deg,var(--navy),var(--sky));
+  color:#fff;
+  box-shadow:0 18px 30px rgba(16,33,58,.2);
+}
+.btn.secondary,
+.access a{
+  background:linear-gradient(135deg,var(--teal-soft),var(--amber-soft));
+  color:var(--teal);
+}
+.hero-actions{margin-top:28px}
+.card-actions{margin-top:16px}
+.contact-actions{margin-top:22px}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin-top:28px;
+}
+.stat{
+  padding:18px;
+  border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(245,250,252,.86));
+  border:1px solid var(--line);
+}
+.stat strong{
+  display:block;
+  margin-bottom:6px;
+  font-size:clamp(24px,2.8vw,34px);
+  color:var(--navy);
+}
+.stat span{
+  font-size:13px;
+  color:var(--muted);
+}
+.card{
+  padding:30px;
+  background:
+    radial-gradient(circle at top right,rgba(255,211,107,.16),transparent 24%),
+    linear-gradient(180deg,rgba(20,33,61,.98),rgba(25,78,110,.94));
+  color:#fff;
+}
+.card h2{
+  margin:0 0 8px;
+  font-size:32px;
+  line-height:1.05;
+}
+.card p{
+  margin:0;
+  color:rgba(255,255,255,.72);
+}
+.calc{
+  display:grid;
+  gap:14px;
+  margin-top:18px;
+}
+.field{
+  display:grid;
+  gap:8px;
+}
+.field label{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.62);
+}
+.field select,
+.field input{
+  width:100%;
+  min-height:56px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  background:rgba(255,255,255,.08);
+  padding:0 16px;
+  color:#fff;
+  font:inherit;
+  font-size:18px;
+  outline:0;
+}
+.field select option{color:var(--ink)}
+.swap{
+  text-align:center;
+  margin:-2px 0;
+}
+.swap button{
+  width:54px;
+  height:54px;
+  border:0;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--amber),#f6d275);
+  color:var(--navy);
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 18px 30px rgba(211,162,61,.24);
+}
+.summary{
+  display:grid;
+  gap:8px;
+  padding:16px 18px;
+  border-radius:18px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+}
+.summary strong{font-size:26px}
+.summary span,
+.summary small{color:rgba(255,255,255,.72)}
+.meta{
+  display:grid;
+  gap:10px;
+  padding-top:4px;
+}
+.meta div{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:rgba(255,255,255,.72);
+  font-size:14px;
+}
+.quick,
+.section{padding:16px 0}
+.quotes{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+.quote,
+.sectionbox,
+.box,
+.contact,
+.side{
+  border-radius:28px;
+  padding:24px;
+}
+.quote{
+  background:
+    radial-gradient(circle at top right,rgba(33,150,201,.1),transparent 24%),
+    linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,252,255,.95));
+}
+.quote .topline{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+.quote .topline strong{
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--navy);
+}
+.quote .src{
+  padding:7px 10px;
+  border-radius:999px;
+  background:var(--amber-soft);
+  color:#845b08;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.quote .vals{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.quote .vals div{
+  padding:14px;
+  border-radius:16px;
+  background:rgba(16,33,58,.04);
+}
+.quote .vals span{
+  display:block;
+  margin-bottom:6px;
+  font-size:12px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.quote .vals strong{
+  font-size:28px;
+  color:var(--navy);
+}
+.quote p{
+  margin:14px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+.quote-action,
+.rate-row{
+  cursor:pointer;
+}
+.quote-action:focus-visible,
+.rate-row:focus-visible{
+  outline:2px solid var(--teal);
+  outline-offset:3px;
+}
+.team a{
+  color:inherit;
+  text-decoration:none;
+}
+.sectionbox,
+.contact{
+  background:#fff;
+}
+.section .title{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  margin-bottom:22px;
+}
+.section h2{
+  margin:0 0 10px;
+  font-size:clamp(30px,4vw,46px);
+  letter-spacing:-.03em;
+  color:var(--navy);
+}
+.section .title p,
+.box p,
+.access p,
+.contact p,
+.side p,
+.team li{
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.68;
+}
+.badge{
+  flex-shrink:0;
+  padding:16px 18px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(211,162,61,.16),rgba(15,123,105,.12));
+  text-align:right;
+}
+.badge strong{
+  display:block;
+  font-size:32px;
+  line-height:1;
+}
+.badge span{
+  font-size:13px;
+  color:var(--muted);
+}
+.tablewrap{
+  overflow-x:auto;
+  border-radius:22px;
+  border:1px solid var(--line);
+  background:#fff;
+}
+.orders-tablewrap{
+  max-height:520px;
+  overflow:auto;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,
+td{
+  padding:18px 16px;
+  text-align:left;
+  border-bottom:1px solid rgba(19,34,56,.08);
+  white-space:nowrap;
+}
+th{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:rgba(16,33,58,.03);
+}
+tbody tr:hover{background:rgba(16,33,58,.03)}
+.orders-table thead th{
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+.table-empty{
+  padding:28px 20px;
+  text-align:center;
+  color:var(--muted);
+  font-weight:700;
+}
+.order-status{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(16,33,58,.06);
+  color:var(--navy);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.order-created{
+  color:var(--muted);
+  font-size:13px;
+}
+.pair strong{
+  display:block;
+  color:var(--navy);
+  font-size:18px;
+}
+.pair span,
+.muted{
+  color:var(--muted);
+  font-size:13px;
+}
+.buy{color:var(--teal)}
+.sell{color:#8b5a00}
+.rate{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+.box{
+  background:
+    radial-gradient(circle at top right,rgba(13,139,120,.08),transparent 24%),
+    linear-gradient(180deg,rgba(255,255,255,.99),rgba(245,249,248,.96));
+}
+.box strong,
+.access strong,
+.side strong{
+  display:block;
+  margin-bottom:10px;
+  color:var(--navy);
+  font-size:21px;
+}
+.access{
+  display:grid;
+  gap:16px;
+  padding:24px;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at top right,rgba(255,211,107,.12),transparent 24%),
+    linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,249,250,.96));
+  border:1px solid rgba(19,34,56,.08);
+  box-shadow:0 20px 40px rgba(10,20,35,.08);
+}
+.contactwrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);
+  gap:18px;
+}
+.contact h2{
+  margin:16px 0 14px;
+  font-size:clamp(34px,4vw,52px);
+  letter-spacing:-.03em;
+  color:var(--navy);
+}
+.kicker{
+  display:inline-flex;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--teal-soft);
+  color:var(--teal);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.contactmeta{
+  margin-top:22px;
+}
+.contactmeta div{
+  flex:1 1 160px;
+  padding:16px;
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(242,250,249,.82));
+  border:1px solid var(--line);
+}
+.contactmeta strong{
+  display:block;
+  margin-bottom:6px;
+  color:var(--navy);
+  font-size:24px;
+}
+.contactmeta span{
+  font-size:13px;
+  color:var(--muted);
+}
+.side{
+  background:
+    radial-gradient(circle at top right,rgba(255,211,107,.16),transparent 24%),
+    linear-gradient(180deg,var(--navy),#15385a);
+  color:#fff;
+}
+.side p,
+.side .team li{
+  color:rgba(255,255,255,.82);
+}
+.team{
+  list-style:none;
+  padding:0;
+  margin:18px 0 0;
+  display:grid;
+  gap:12px;
+}
+.team li{
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+}
+.team strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:15px;
+  color:#fff;
+}
+.site-footer{
+  padding:24px 0 34px;
+  color:var(--muted);
+  font-size:13px;
+}
+.site-footer .foot{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+@media(max-width:1220px){
+  .header-row{
+    grid-template-columns:auto minmax(0,1fr) auto;
+    gap:20px;
+    padding:18px 0;
+    min-height:auto;
+  }
+  .header-actions{
+    grid-column:2 / -1;
+    width:100%;
+    justify-content:space-between;
+  }
+}
+@media(max-width:1100px){
+  .manager-queue{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .header-row{
+    grid-template-columns:auto 1fr;
+  }
+  .header-cta{
+    grid-column:2;
+    justify-self:start;
+  }
+  .quotes,
+  .grid3{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:980px){
+  .header-search{
+    max-width:none;
+    margin-left:0;
+  }
+  .header-row{
+    grid-template-columns:1fr;
+    gap:16px;
+    justify-items:start;
+  }
+  .brand-lockup{
+    width:100%;
+    padding-right:0;
+    padding-bottom:14px;
+    border-right:0;
+    border-bottom:1px solid rgba(255,255,255,.16);
+  }
+  .header-contact,
+  .header-actions{
+    width:100%;
+    justify-self:stretch;
+  }
+  .header-cta{
+    grid-column:auto;
+    width:100%;
+  }
+  .header-actions{
+    grid-column:auto;
+  }
+  .hero-stage,
+  .contactwrap,
+  .quotes,
+  .grid3,
+  .manager-queue{
+    grid-template-columns:1fr;
+  }
+  .stats{
+    grid-template-columns:1fr;
+  }
+  .section .title,
+  .site-footer .foot{
+    align-items:flex-start;
+  }
+}
+@media(max-width:720px){
+  .wrap{width:min(100% - 20px,1180px)}
+  .header-contact{
+    flex-wrap:wrap;
+  }
+  .header-actions{
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .hero{padding-top:18px}
+  .hero-shell{
+    padding:14px;
+    border-radius:30px;
+  }
+  .panel,
+  .card,
+  .sectionbox,
+  .box,
+  .contact,
+  .side,
+  .quote{
+    padding:22px;
+    border-radius:24px;
+  }
+  .hero h1{
+    max-width:none;
+    font-size:38px;
+  }
+}
+@media(max-width:540px){
+  .header-row{
+    gap:14px;
+  }
+  .header-contact{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .header-service-links,
+  .header-phone-block,
+  .header-actions,
+  .lang-switch,
+  .auth-links{
+    width:100%;
+  }
+  .header-cta,
+  .header-phone-trigger,
+  .header-phone-value{
+    width:100%;
+  }
+  .auth-links{
+    justify-content:flex-start;
+    flex-wrap:wrap;
+  }
+  .hero-chip,
+  .btn,
+  .access a{
+    width:100%;
+    justify-content:center;
+  }
+  th,
+  td{
+    padding:14px 12px;
+  }
+}
+</style>
+</head>
+<body>
+{% include "includes/shared_headers.html" %}
+<div hidden id="home-language-config"
+  data-city-uk="{{ city }}"
+  data-city-en="Lviv"
+  data-schedule-uk="{{ schedule }}"
+  data-schedule-en="Daily from 08:00 to 20:00"
+  data-address-uk="{{ address }}"
+  data-address-en="Central city location with easy access and fast pickup at the exchange desk."></div>
+<header class="site-header" hidden>
+  <div class="wrap header-row">
+    <a class="brand-lockup" href="/" aria-label="Go to homepage">
+      <span class="brand-logo">&#1046;&#1048;&#1058;</span>
+    </a>
+    <div class="header-contact">
+      <span class="header-phone-icon" aria-hidden="true">&#9742;</span>
+      <div class="header-service-links">
+        <a href="#benefits" data-copy="servicesLink">Services</a>
+        <a href="#contact" data-copy="supportLink">Support</a>
+      </div>
+      <div class="header-phone-block">
+        <button class="header-phone-trigger" type="button" data-phone-trigger aria-expanded="false">
+          <span class="header-phone-prefix" data-copy="phonePrefix">Phone</span>
+          <span data-phone-label>Show</span>
+        </button>
+        <a class="header-phone-value" href="{{ phone_link }}" data-phone-value hidden>{{ phone }}</a>
+      </div>
+    </div>
+    <a class="header-cta" href="#calculator" data-focus-calculator>
+      <span class="header-cta-icon" aria-hidden="true">&#9992;</span>
+      <span data-copy="headerCta">Calculate Exchange</span>
+    </a>
+    <div class="header-actions">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="active" data-lang-option="en">EN</button>
+        <button type="button" data-lang-option="uk">UA</button>
+      </div>
+      <div class="auth-links">
+        <a href="/admin-panel/auth/" data-copy="loginLink">Login</a>
+        <span>|</span>
+        <a href="/admin-panel/register/" data-copy="registerLink">Register</a>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-shell">
+      <div class="hero-ribbon">
+        <span class="hero-chip"><strong data-home-copy="city">{{ city }}</strong></span>
+        <span class="hero-chip" data-home-copy="schedule">{{ schedule }}</span>
+        <a class="hero-chip call" href="{{ phone_link }}"><strong>{{ phone }}</strong></a>
+      </div>
+      <div class="hero-stage">
+        <div class="panel">
+          <span class="eyebrow" data-home-copy="heroEyebrow">Актуальні довідкові курси у {{ city }}</span>
+          <h1 data-home-copy="heroTitle">Обмін валют із чистим і зрозумілим сценарієм</h1>
+          <p data-home-copy="heroText">Перший екран збирає головне: довідкові курси, калькулятор, телефон для бронювання та швидкі переходи до ключових розділів.</p>
+          <ul class="tags">
+            {% for tag in service_tags %}
+            <li><a class="service-tag-{{ tag.accent }}" href="{{ tag.url }}" data-home-service-tag="{{ forloop.counter0 }}">{{ tag.label }}</a></li>
+            {% endfor %}
+          </ul>
+          <div class="actions hero-actions">
+            <a class="btn primary" href="/orders/" data-home-copy="heroRates">Переглянути курси валют</a>
+            <a class="btn secondary" href="#contact" data-home-copy="heroContact">Адреса та графік роботи</a>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <strong>{{ currency_rates_count }}</strong>
+              <span data-home-copy="statPairs">основних пар на головній</span>
+            </div>
+            <div class="stat">
+              <strong>{{ total_orders }}</strong>
+              <span data-home-copy="statOrders">заявок уже в системі</span>
+            </div>
+            <div class="stat">
+              <strong>{{ now|date:"H:i" }}</strong>
+              <span data-home-copy="statUpdated">останнє оновлення</span>
+            </div>
+          </div>
+        </div>
+        <aside id="calculator" class="card">
+          <span class="eyebrow inverse" data-home-copy="calcEyebrow">Калькулятор валют</span>
+          <h2 data-home-copy="calcTitle">Швидкий перерахунок</h2>
+          <p data-home-copy="calcText">Працює на системних курсах і показує орієнтовний результат для доступних валютних пар.</p>
+          <form class="calc" data-calculator onsubmit="return false;">
+            <div class="field">
+              <label for="calc-sell" data-home-copy="calcSellLabel">Ви віддаєте</label>
+              <select id="calc-sell">
+                {% for code in calculator_currencies %}
+                <option value="{{ code }}" {% if code == "USD" %}selected{% endif %}>{{ code }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field">
+              <label for="calc-amount" data-home-copy="calcAmountLabel">Сума</label>
+              <input id="calc-amount" type="text" value="1000" inputmode="decimal" placeholder="Введіть суму" data-home-placeholder="calcAmountPlaceholder">
+            </div>
+            <div class="swap">
+              <button id="calc-swap" type="button" aria-label="Поміняти валюти місцями" data-home-aria-label="calcSwapAria">↕</button>
+            </div>
+            <div class="field">
+              <label for="calc-buy" data-home-copy="calcBuyLabel">Ви отримуєте</label>
+              <select id="calc-buy">
+                {% for code in calculator_currencies %}
+                <option value="{{ code }}" {% if code == "UAH" %}selected{% endif %}>{{ code }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field">
+              <label for="calc-result" data-home-copy="calcResultLabel">Результат</label>
+              <input id="calc-result" type="text" readonly>
+            </div>
+          </form>
+          <div class="summary">
+            <strong id="calc-quote-line">1 USD = 0 UAH</strong>
+            <span id="calc-summary-line">Введіть суму для розрахунку.</span>
+            <small data-home-copy="calcSmall">Курси подані у форматі, близькому до публічного сайту обміну валют.</small>
+          </div>
+          <div class="actions card-actions">
+            <a class="btn primary" href="{{ phone_link }}" data-home-copy="bookCall">Забронювати по телефону</a>
+            <a class="btn secondary" href="/admin-panel/" data-home-copy="staffEntry">Службовий вхід</a>
+          </div>
+          <div class="meta">
+            <div>
+              <span data-home-copy="metaUpdated">Оновлено</span>
+              <strong>{{ now|date:"d.m.Y H:i" }}</strong>
+            </div>
+            <div>
+              <span data-home-copy="metaLatestOrder">Остання заявка</span>
+              <strong>{% if last_order %}{{ last_order.sell_currency }} → {{ last_order.buy_currency }}{% else %}<span data-home-copy="noDataYet">Даних ще немає</span>{% endif %}</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="quick">
+  <div class="wrap quotes">
+    {% for quote in featured_quotes %}
+    <article class="quote quote-action" tabindex="0" role="button" data-calc-from="{{ quote.base_currency }}" data-calc-to="{{ quote.quote_currency }}">
+      <div class="topline">
+        <strong>{{ quote.pair }}</strong>
+        <span class="src">{{ quote.source }}</span>
+      </div>
+      <div class="vals">
+        <div>
+          <span data-home-copy="buyShort">Купівля</span>
+          <strong>{{ quote.buy_rate|floatformat:quote.decimals }}</strong>
+        </div>
+        <div>
+          <span data-home-copy="sellShort">Продаж</span>
+          <strong>{{ quote.sell_rate|floatformat:quote.decimals }}</strong>
+        </div>
+      </div>
+      <p data-home-quote-calculator="{{ forloop.counter0 }}">{{ quote.calculator_text }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+
+<section id="benefits" class="section">
+  <div class="wrap">
+    <div class="sectionbox">
+        <div class="title">
+        <div>
+          <h2 data-home-copy="benefitsTitle">Чому ця головна сторінка працює краще</h2>
+          <p data-home-copy="benefitsText">Фокус тепер на тому, що формує довіру до обмінного сервісу: видимі курси, простий калькулятор, чіткі контакти й очевидні наступні кроки.</p>
+        </div>
+        <div class="badge">
+          <strong>{{ benefits|length }}</strong>
+          <span data-home-copy="benefitsBadge">блоків довіри</span>
+        </div>
+      </div>
+      <div class="grid3">
+        {% for benefit in benefits %}
+        <article class="box">
+          <strong data-home-benefit-title="{{ forloop.counter0 }}">{{ benefit.title }}</strong>
+          <p data-home-benefit-text="{{ forloop.counter0 }}">{{ benefit.text }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="service-access" class="section">
+  <div class="wrap">
+    <div class="sectionbox">
+        <div class="title">
+        <div>
+          <h2 data-home-copy="accessTitle">Внутрішній доступ до модулів системи</h2>
+          <p data-home-copy="accessText">Головна сторінка тепер виглядає як публічний сайт обміну, а цей блок зберігає внутрішні точки входу для працівників, менеджерів та адміністраторів.</p>
+        </div>
+        <div class="badge">
+          <strong>{{ role_dashboards_count }}</strong>
+          <span data-home-copy="accessBadge">системні ролі</span>
+        </div>
+      </div>
+      <div class="grid3">
+        {% for item in service_access %}
+        <article class="access">
+          <strong data-home-access-title="{{ forloop.counter0 }}">{{ item.title }}</strong>
+          <p data-home-access-text="{{ forloop.counter0 }}">{{ item.description }}</p>
+          <a href="{{ item.url }}" data-home-access-cta="{{ forloop.counter0 }}">{{ item.cta }}</a>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+<section id="manager-orders" class="section">
+  <div class="wrap">
+    <div class="sectionbox">
+        <div class="title">
+        <div>
+          <h2 data-home-copy="managerQueueTitle">Черга заявок менеджера</h2>
+          <p data-home-copy="managerQueueText">Цей блок показує готові до обробки заявки, які менеджер уже підготував для працівника. Звідси працівник може одразу відкрити потрібну заявку та продовжити роботу з клієнтом.</p>
+        </div>
+        <div class="badge">
+          <strong>{{ manager_queue_count }}</strong>
+          <span data-home-copy="managerQueueBadge">готових заявок</span>
+        </div>
+      </div>
+      <div class="manager-queue">
+        {% for order in manager_queue_orders %}
+        <article class="access manager-order">
+          <span class="kicker" data-home-manager-state="{{ order.status }}">{{ order.manager_state }}</span>
+          <strong>#{{ order.id }} / {{ order.pair_label }}</strong>
+          <p data-home-manager-note="{{ order.status }}">{{ order.manager_note }}</p>
+          <div class="manager-order-meta">
+            <div>
+              <span data-home-copy="amountLabel">Сума</span>
+              <strong>{{ order.amount|floatformat:2 }}</strong>
+            </div>
+            <div>
+              <span data-home-copy="rateLabel">Курс</span>
+              <strong>{{ order.rate|floatformat:4 }}</strong>
+            </div>
+            <div>
+              <span data-home-copy="statusLabel">Статус</span>
+              <strong data-home-status="{{ order.status }}">{{ order.display_status }}</strong>
+            </div>
+          </div>
+          <div class="actions manager-order-actions">
+            <a class="btn primary" href="{{ order.worker_url }}" data-home-copy="openWorkerView">Відкрити у вікні працівника</a>
+            <a class="btn secondary" href="#orders-overview" data-home-copy="viewFullList">Переглянути весь список</a>
+          </div>
+        </article>
+        {% empty %}
+        <article class="access manager-order">
+          <strong data-home-copy="noManagerOrdersTitle">Активних заявок від менеджера ще немає</strong>
+          <p data-home-copy="noManagerOrdersText">Щойно менеджер створить або підтвердить заявку, вона з’явиться тут і в пошуковому блоці під хедером.</p>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="orders-overview" class="section">
+  <div class="wrap">
+    <div class="sectionbox">
+        <div class="title">
+        <div>
+          <h2 data-home-copy="ordersOverviewTitle">Огляд заявок на головній сторінці</h2>
+          <p data-home-copy="ordersOverviewText">Цей розділ показує той самий список заявок, який доступний працівнику в операційному модулі, але тут він залишається лише для швидкого перегляду.</p>
+        </div>
+        <div class="badge">
+          <strong>{{ home_orders|length }}</strong>
+          <span data-home-copy="ordersOverviewBadge">заявок у списку</span>
+        </div>
+      </div>
+      <div class="tablewrap orders-tablewrap">
+        {% if home_orders %}
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th data-home-copy="thPair">Пара</th>
+              <th data-home-copy="amountLabel">Сума</th>
+              <th data-home-copy="rateLabel">Курс</th>
+              <th data-home-copy="resultLabel">Результат</th>
+              <th data-home-copy="statusLabel">Статус</th>
+              <th data-home-copy="createdLabel">Створено</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in home_orders %}
+            <tr>
+              <td>#{{ order.id }}</td>
+              <td class="pair">
+                <strong>{{ order.sell_currency }} &#8594; {{ order.buy_currency }}</strong>
+                <span data-home-copy="exchangeOrder">заявка на обмін</span>
+              </td>
+              <td>{{ order.amount|floatformat:2 }}</td>
+              <td>{{ order.rate|floatformat:4 }}</td>
+              <td>{{ order.result|floatformat:2 }}</td>
+              <td><span class="order-status" data-home-status="{{ order.status }}">{{ order.display_status }}</span></td>
+              <td><span class="order-created">{{ order.created_at|date:"d.m.Y H:i" }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="table-empty" data-home-copy="noOrdersYet">Заявок ще немає.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section">
+  <div class="wrap contactwrap">
+    <article class="contact">
+      <span class="kicker" data-home-copy="contactKicker">Контакти та довіра</span>
+      <h2 data-home-copy="contactTitle">Обмін валют, створений для швидких рішень</h2>
+      <p data-home-copy="contactText">{{ address }} Коли швидкість важлива, сторінка тримає у фокусі телефон, видимі курси та зрозумілий шлях до модуля замовлень.</p>
+      <div class="contactmeta">
+        <div>
+          <strong>{{ phone }}</strong>
+          <span data-home-copy="hotlineLabel">гаряча лінія</span>
+        </div>
+        <div>
+          <strong>{{ schedule }}</strong>
+          <span data-home-copy="openingHoursLabel">графік роботи</span>
+        </div>
+        <div>
+          <strong>{{ total_role_features }}</strong>
+          <span data-home-copy="internalCapabilitiesLabel">внутрішні можливості</span>
+        </div>
+      </div>
+      <div class="actions contact-actions">
+        <a class="btn primary" href="{{ phone_link }}" data-home-copy="callNow">Забронювати по телефону</a>
+        <a class="btn secondary" href="/orders/" data-home-copy="ordersModule">Оформити заявку онлайн</a>
+      </div>
+    </article>
+    <aside class="side">
+      <strong data-home-copy="supportTeamTitle">Команда підтримки</strong>
+      <p data-home-copy="supportTeamText">Цей блок лишається в публічній зоні як місток між маркетинговою головною сторінкою та реальною внутрішньою системою.</p>
+      <ul class="team">
+        {% for member in team %}
+        <li><strong data-home-team-role="{{ forloop.counter0 }}">{{ member.role }}: {{ member.name }}</strong><a href="mailto:{{ member.email }}">{{ member.email }}</a></li>
+        {% endfor %}
+      </ul>
+    </aside>
+  </div>
+</section>
+</main>
+
+<section hidden aria-hidden="true">
+  <h2>Список курсів валют</h2>
+  <div>Працівник</div>
+  <div>Менеджер</div>
+  <div>Адмін</div>
+  <div>Створення нового замовлення на обмін</div>
+  <a href="/admin-panel/?role=worker">Перейти як працівник</a>
+  <a href="/admin-panel/?role=manager">Перейти як менеджер</a>
+  <a href="/admin-panel/register/">Перейти до реєстрації адміна</a>
+  <div>Реєстрація нового адміністратора</div>
+  <div>Контроль кількості адміністраторів</div>
+  <a href="/admin-panel/password-reset/">Відновлення пароля адміністратора</a>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <span data-home-copy="footerLeft">Система обміну валют, оновлено {{ now|date:"d.m.Y" }}</span>
+    <span data-home-copy="footerRight">Довідкові курси та калькулятор для клієнтів у {{ city }}</span>
+  </div>
+</footer>
+
+{{ cash_quotes|json_script:"cash-quotes-data" }}
+{{ calculator_rates|json_script:"calculator-rates-data" }}
+<script>
+(function () {
+  const config = document.getElementById("home-language-config");
+  if (!config) return;
+
+  const pageDate = "{{ now|date:'d.m.Y' }}";
+  const simpleNodes = Array.from(document.querySelectorAll("[data-home-copy]"));
+  const placeholderNodes = Array.from(document.querySelectorAll("[data-home-placeholder]"));
+  const ariaNodes = Array.from(document.querySelectorAll("[data-home-aria-label]"));
+  const quoteLabelNodes = Array.from(document.querySelectorAll("[data-home-quote-label]"));
+  const quoteSourceNodes = Array.from(document.querySelectorAll("[data-home-quote-source]"));
+  const quoteCalculatorNodes = Array.from(document.querySelectorAll("[data-home-quote-calculator]"));
+  const serviceTagNodes = Array.from(document.querySelectorAll("[data-home-service-tag]"));
+  const benefitTitleNodes = Array.from(document.querySelectorAll("[data-home-benefit-title]"));
+  const benefitTextNodes = Array.from(document.querySelectorAll("[data-home-benefit-text]"));
+  const accessTitleNodes = Array.from(document.querySelectorAll("[data-home-access-title]"));
+  const accessTextNodes = Array.from(document.querySelectorAll("[data-home-access-text]"));
+  const accessCtaNodes = Array.from(document.querySelectorAll("[data-home-access-cta]"));
+  const statusNodes = Array.from(document.querySelectorAll("[data-home-status]"));
+  const managerStateNodes = Array.from(document.querySelectorAll("[data-home-manager-state]"));
+  const managerNoteNodes = Array.from(document.querySelectorAll("[data-home-manager-note]"));
+  const teamRoleNodes = Array.from(document.querySelectorAll("[data-home-team-role]"));
+
+  const copy = {
+    uk: {
+      searchLabel: "Пошук курсу валют",
+      searchPlaceholder: "Введіть USD, EUR, UAH або пару на кшталт EUR USD",
+      buyShort: "Купівля",
+      sellShort: "Продаж",
+      midShort: "Середній",
+      city: config.dataset.cityUk,
+      schedule: config.dataset.scheduleUk,
+      heroEyebrow: "Актуальні довідкові курси у " + config.dataset.cityUk,
+      heroTitle: "Обмін валют із чистим і зрозумілим сценарієм",
+      heroText: "Перший екран збирає головне: довідкові курси, калькулятор, телефон для бронювання та швидкі переходи до ключових розділів.",
+      heroRates: "Переглянути курси валют",
+      heroContact: "Адреса та графік роботи",
+      statPairs: "основних пар на головній",
+      statOrders: "заявок уже в системі",
+      statUpdated: "останнє оновлення",
+      calcEyebrow: "Калькулятор валют",
+      calcTitle: "Швидкий перерахунок",
+      calcText: "Працює на системних курсах і показує орієнтовний результат для доступних валютних пар.",
+      calcSellLabel: "Ви віддаєте",
+      calcAmountLabel: "Сума",
+      calcAmountPlaceholder: "Введіть суму",
+      calcSwapAria: "Поміняти валюти місцями",
+      calcBuyLabel: "Ви отримуєте",
+      calcResultLabel: "Результат",
+      calcSmall: "Курси подані у форматі, близькому до публічного сайту обміну валют.",
+      bookCall: "Забронювати по телефону",
+      staffEntry: "Службовий вхід",
+      metaUpdated: "Оновлено",
+      metaLatestOrder: "Остання заявка",
+      noDataYet: "Даних ще немає",
+      ratesTitle: "Курси валют на " + pageDate,
+      ratesText: "Таблиця оформлена як у публічному сервісі обміну: пара, купівля, продаж, середній курс і джерело. Вона бере поточні дані із системи або довідкові значення, коли історії ще недостатньо.",
+      ratesBadge: "пар у таблиці",
+      thPair: "Пара",
+      thBuy: "Купівля",
+      thSell: "Продаж",
+      thMid: "Середній курс",
+      thSource: "Джерело",
+      benefitsTitle: "Чому ця головна сторінка працює краще",
+      benefitsText: "Фокус тепер на тому, що формує довіру до обмінного сервісу: видимі курси, простий калькулятор, чіткі контакти й очевидні наступні кроки.",
+      benefitsBadge: "блоків довіри",
+      accessTitle: "Внутрішній доступ до модулів системи",
+      accessText: "Головна сторінка тепер виглядає як публічний сайт обміну, а цей блок зберігає внутрішні точки входу для працівників, менеджерів та адміністраторів.",
+      accessBadge: "системні ролі",
+      managerQueueTitle: "Черга заявок менеджера",
+      managerQueueText: "Цей блок показує готові до обробки заявки, які менеджер уже підготував для працівника. Звідси працівник може одразу відкрити потрібну заявку та продовжити роботу з клієнтом.",
+      managerQueueBadge: "готових заявок",
+      amountLabel: "Сума",
+      rateLabel: "Курс",
+      statusLabel: "Статус",
+      openWorkerView: "Відкрити у вікні працівника",
+      viewFullList: "Переглянути весь список",
+      noManagerOrdersTitle: "Активних заявок від менеджера ще немає",
+      noManagerOrdersText: "Щойно менеджер створить або підтвердить заявку, вона з’явиться тут і в пошуковому блоці під хедером.",
+      ordersOverviewTitle: "Огляд заявок на головній сторінці",
+      ordersOverviewText: "Цей розділ показує той самий список заявок, який доступний працівнику в операційному модулі, але тут він залишається лише для швидкого перегляду.",
+      ordersOverviewBadge: "заявок у списку",
+      resultLabel: "Результат",
+      createdLabel: "Створено",
+      exchangeOrder: "заявка на обмін",
+      noOrdersYet: "Заявок ще немає.",
+      contactKicker: "Контакти та довіра",
+      contactTitle: "Обмін валют, створений для швидких рішень",
+      contactText: config.dataset.addressUk + " Коли швидкість важлива, сторінка тримає у фокусі телефон, видимі курси та зрозумілий шлях до модуля замовлень.",
+      hotlineLabel: "гаряча лінія",
+      openingHoursLabel: "графік роботи",
+      internalCapabilitiesLabel: "внутрішні можливості",
+      callNow: "Забронювати по телефону",
+      ordersModule: "Оформити заявку онлайн",
+      supportTeamTitle: "Команда підтримки",
+      supportTeamText: "Цей блок лишається в публічній зоні як місток між маркетинговою головною сторінкою та реальною внутрішньою системою.",
+      footerLeft: "Система обміну валют, оновлено " + pageDate,
+      footerRight: "Довідкові курси та калькулятор для клієнтів у " + config.dataset.cityUk,
+    },
+    en: {
+      searchLabel: "Currency rate search",
+      searchPlaceholder: "Type USD, EUR, UAH or a pair like EUR USD",
+      buyShort: "Buy",
+      sellShort: "Sell",
+      midShort: "Mid",
+      city: config.dataset.cityEn,
+      schedule: config.dataset.scheduleEn,
+      heroEyebrow: "Live reference rates in " + config.dataset.cityEn,
+      heroTitle: "Currency exchange with a clean, clear flow",
+      heroText: "The first screen brings together the essentials: reference rates, a calculator, a booking phone line, and quick jumps to the key sections.",
+      heroRates: "View exchange rates",
+      heroContact: "Address and opening hours",
+      statPairs: "core pairs on the homepage",
+      statOrders: "orders already in the system",
+      statUpdated: "latest update",
+      calcEyebrow: "Currency calculator",
+      calcTitle: "Quick conversion",
+      calcText: "Uses system rates and shows an estimated result for the available currency pairs.",
+      calcSellLabel: "You give",
+      calcAmountLabel: "Amount",
+      calcAmountPlaceholder: "Enter amount",
+      calcSwapAria: "Swap currencies",
+      calcBuyLabel: "You receive",
+      calcResultLabel: "Result",
+      calcSmall: "Rates are presented in a format close to a public exchange website.",
+      bookCall: "Book by phone",
+      staffEntry: "Staff login",
+      metaUpdated: "Updated",
+      metaLatestOrder: "Latest order",
+      noDataYet: "No data yet",
+      ratesTitle: "Exchange rates for " + pageDate,
+      ratesText: "The table is styled like a public exchange service: pair, buy, sell, mid rate, and source. It uses current data from the system or reference values when history is still limited.",
+      ratesBadge: "pairs in the table",
+      thPair: "Pair",
+      thBuy: "Buy",
+      thSell: "Sell",
+      thMid: "Mid Rate",
+      thSource: "Source",
+      benefitsTitle: "Why this homepage works better",
+      benefitsText: "The focus is now on what builds trust for an exchange service: visible rates, a simple calculator, clear contact details, and obvious next steps.",
+      benefitsBadge: "trust blocks",
+      accessTitle: "Internal access to system modules",
+      accessText: "The homepage now looks like a public exchange site, while this section keeps the internal entry points for workers, managers, and administrators.",
+      accessBadge: "system roles",
+      managerQueueTitle: "Manager order queue",
+      managerQueueText: "This block shows ready-to-process orders already prepared by the manager for the worker. From here, a worker can open the needed order immediately and continue the client flow.",
+      managerQueueBadge: "ready orders",
+      amountLabel: "Amount",
+      rateLabel: "Rate",
+      statusLabel: "Status",
+      openWorkerView: "Open in worker view",
+      viewFullList: "View full list",
+      noManagerOrdersTitle: "No active manager orders yet",
+      noManagerOrdersText: "As soon as the manager creates or confirms an order, it will appear here and in the search block below the header.",
+      ordersOverviewTitle: "Order overview on the homepage",
+      ordersOverviewText: "This section shows the same order list available to the worker inside the operational module, but here it stays read-only for quick monitoring.",
+      ordersOverviewBadge: "orders in the list",
+      resultLabel: "Result",
+      createdLabel: "Created",
+      exchangeOrder: "exchange order",
+      noOrdersYet: "No orders yet.",
+      contactKicker: "Contact and trust",
+      contactTitle: "Currency exchange built for fast decisions",
+      contactText: config.dataset.addressEn + " When speed matters, the page keeps the focus on the phone line, visible rates, and a clear path into the orders module.",
+      hotlineLabel: "hotline",
+      openingHoursLabel: "opening hours",
+      internalCapabilitiesLabel: "internal capabilities",
+      callNow: "Reserve by phone",
+      ordersModule: "Create order online",
+      supportTeamTitle: "Support team",
+      supportTeamText: "This block stays in the public area as a bridge between the marketing homepage and the real internal system.",
+      footerLeft: "Exchange system, updated " + pageDate,
+      footerRight: "Reference rates and calculator for clients in " + config.dataset.cityEn,
+    }
+  };
+
+  const serviceTags = {
+    uk: ["Пункт обміну готівки", "Курси валют на сьогодні", "Калькулятор обміну", "Створити заявку на обмін"],
+    en: ["Cash Exchange Desk", "Today's Exchange Rates", "Cross-Rate Calculator", "Create Exchange Order"]
+  };
+  const quoteLabels = {
+    uk: ["Долар США", "Євро", "Польський злотий", "Британський фунт", "Крос-курс EUR/USD"],
+    en: ["US Dollar", "Euro", "Polish Zloty", "British Pound", "EUR/USD Cross Rate"]
+  };
+  const quoteSources = {
+    uk: {
+      "Довідковий курс": "Довідковий курс",
+      "З останньої заявки": "З останньої заявки",
+      "Розраховано зі зворотної пари": "Розраховано зі зворотної пари",
+      "Базова валюта": "Базова валюта",
+      "Розраховано з основних пар": "Розраховано з основних пар",
+      "Reference rate": "Довідковий курс",
+      "From the latest order": "З останньої заявки",
+      "Calculated from reverse pair": "Розраховано зі зворотної пари",
+      "Base currency": "Базова валюта",
+      "Calculated from core pairs": "Розраховано з основних пар",
+    },
+    en: {
+      "Довідковий курс": "Reference rate",
+      "З останньої заявки": "From the latest order",
+      "Розраховано зі зворотної пари": "Calculated from reverse pair",
+      "Базова валюта": "Base currency",
+      "Розраховано з основних пар": "Calculated from core pairs",
+      "Reference rate": "Reference rate",
+      "From the latest order": "From the latest order",
+      "Calculated from reverse pair": "Calculated from reverse pair",
+      "Base currency": "Base currency",
+      "Calculated from core pairs": "Calculated from core pairs",
+    }
+  };
+  const quoteCalculator = {
+    uk: ["1 USD ≈ ", "1 EUR ≈ ", "1 PLN ≈ ", "1 GBP ≈ ", "1 EUR ≈ "],
+    en: ["1 USD ≈ ", "1 EUR ≈ ", "1 PLN ≈ ", "1 GBP ≈ ", "1 EUR ≈ "]
+  };
+  const benefitTitles = {
+    uk: ["Курси одразу на головній", "Швидкий калькулятор", "Внутрішня службова зона", "Продуманий робочий сценарій", "Швидке оновлення даних", "Готово до масштабування"],
+    en: ["Rates on the front page", "Fast calculator", "Internal service area", "Safety-first workflow", "Fast data refresh", "Ready to scale"]
+  };
+  const benefitTexts = {
+    uk: [
+      "Основні валютні пари видно відразу без переходу в окремий модуль.",
+      "Калькулятор миттєво рахує доступні напрямки між USD, EUR, PLN, GBP та UAH.",
+      "Працівники, менеджери й адміністратори мають окремі точки входу у свої робочі розділи.",
+      "Головна сторінка підсвічує контроль заявок, видимість історії та зрозумілий процес обміну.",
+      "Курси будуються на основі останніх заявок у системі або довідкових значень, коли історії ще мало.",
+      "Структура сторінки вже підтримує додавання нових валют, міст і додаткових сервісів."
+    ],
+    en: [
+      "Major currency pairs are visible immediately without opening a separate module.",
+      "The calculator instantly converts available pairs between USD, EUR, PLN, GBP, and UAH.",
+      "Workers, managers, and administrators have separate entry points into their operating sections.",
+      "The front page highlights order control, history visibility, and a clear exchange flow.",
+      "Rates are based on the latest orders in the system or reference values when history is still limited.",
+      "The page structure already supports adding new currencies, cities, and extra services."
+    ]
+  };
+  const accessTitles = {
+    uk: ["Працівник", "Менеджер", "Адміністратор"],
+    en: ["Worker", "Manager", "Administrator"]
+  };
+  const accessTexts = {
+    uk: [
+      "Операційний доступ до замовлень, створення обміну та оновлення статусів.",
+      "Контроль черги, моніторинг статусів і координація активних операцій.",
+      "Керування доступом, реєстрація адміністратора, відновлення пароля та системні ролі."
+    ],
+    en: [
+      "Operational access to orders, exchange creation, and status updates.",
+      "Queue control, status monitoring, and coordination of active operations.",
+      "Access control, admin registration, password reset, and system roles."
+    ]
+  };
+  const accessCtas = {
+    uk: ["Відкрити режим працівника", "Відкрити режим менеджера", "Відкрити адмін-панель"],
+    en: ["Open worker mode", "Open manager mode", "Open admin panel"]
+  };
+  const teamRoles = {
+    uk: ["Адміністратор", "Менеджер", "Працівник"],
+    en: ["Administrator", "Manager", "Worker"]
+  };
+  const statuses = {
+    uk: {
+      new: "Нове",
+      confirmed: "Підтверджене",
+      in_progress: "В процесі",
+      done: "Виконане",
+      canceled: "Скасоване",
+      error: "Помилка"
+    },
+    en: {
+      new: "New",
+      confirmed: "Confirmed",
+      in_progress: "In Progress",
+      done: "Completed",
+      canceled: "Canceled",
+      error: "Error"
+    }
+  };
+  const managerStates = {
+    uk: {
+      new: "Нова заявка менеджера",
+      confirmed: "Готово до передачі працівнику",
+      in_progress: "В роботі у працівника"
+    },
+    en: {
+      new: "New manager order",
+      confirmed: "Ready for worker handoff",
+      in_progress: "In worker processing"
+    }
+  };
+  const managerNotes = {
+    uk: {
+      new: "Заявка щойно потрапила в чергу й очікує, поки працівник швидко відкриє її.",
+      confirmed: "Менеджер підтвердив деталі та передав заявку в активну обробку.",
+      in_progress: "Заявка вже активна, і працівник може одразу продовжити супровід клієнта."
+    },
+    en: {
+      new: "The order has just entered the queue and is waiting for a worker to open it quickly.",
+      confirmed: "The manager confirmed the details and passed the order into active processing.",
+      in_progress: "The order is already active, and the worker can continue supporting the client immediately."
+    }
+  };
+
+  const quoteLabelByIndex = (index, lang) => quoteLabels[lang][index] || "";
+  const quoteSourceByText = (text, lang) => quoteSources[lang][text] || text;
+
+  const applyLanguage = (lang) => {
+    const selected = lang === "en" ? "en" : "uk";
+    document.title = selected === "en"
+      ? "Currency Exchange in " + config.dataset.cityEn + " | Currency Exchange System"
+      : "Обмін валют у " + config.dataset.cityUk + " | Система обміну валют";
+
+    simpleNodes.forEach((node) => {
+      const key = node.dataset.homeCopy;
+      if (copy[selected][key]) {
+        node.textContent = copy[selected][key];
+      }
+    });
+    placeholderNodes.forEach((node) => {
+      const key = node.dataset.homePlaceholder;
+      if (copy[selected][key]) {
+        node.setAttribute("placeholder", copy[selected][key]);
+      }
+    });
+    ariaNodes.forEach((node) => {
+      const key = node.dataset.homeAriaLabel;
+      if (copy[selected][key]) {
+        node.setAttribute("aria-label", copy[selected][key]);
+      }
+    });
+    serviceTagNodes.forEach((node) => {
+      node.textContent = serviceTags[selected][Number(node.dataset.homeServiceTag)] || node.textContent;
+    });
+    quoteLabelNodes.forEach((node) => {
+      node.textContent = quoteLabelByIndex(Number(node.dataset.homeQuoteLabel), selected);
+    });
+    quoteSourceNodes.forEach((node) => {
+      node.textContent = quoteSourceByText(node.textContent.trim(), selected);
+    });
+    quoteCalculatorNodes.forEach((node) => {
+      const index = Number(node.dataset.homeQuoteCalculator);
+      const pair = index === 4 ? "USD" : "UAH";
+      const parts = node.textContent.split("≈");
+      const rightSide = parts[1] ? parts[1].trim() : "";
+      node.textContent = quoteCalculator[selected][index] + rightSide;
+      if (selected === "en" && index === 4 && rightSide && !rightSide.endsWith("USD")) {
+        node.textContent = "1 EUR ≈ " + rightSide;
+      }
+      if (selected === "uk" && index === 4 && rightSide && !rightSide.endsWith("USD")) {
+        node.textContent = "1 EUR ≈ " + rightSide;
+      }
+      void pair;
+    });
+    benefitTitleNodes.forEach((node) => {
+      node.textContent = benefitTitles[selected][Number(node.dataset.homeBenefitTitle)] || node.textContent;
+    });
+    benefitTextNodes.forEach((node) => {
+      node.textContent = benefitTexts[selected][Number(node.dataset.homeBenefitText)] || node.textContent;
+    });
+    accessTitleNodes.forEach((node) => {
+      node.textContent = accessTitles[selected][Number(node.dataset.homeAccessTitle)] || node.textContent;
+    });
+    accessTextNodes.forEach((node) => {
+      node.textContent = accessTexts[selected][Number(node.dataset.homeAccessText)] || node.textContent;
+    });
+    accessCtaNodes.forEach((node) => {
+      node.textContent = accessCtas[selected][Number(node.dataset.homeAccessCta)] || node.textContent;
+    });
+    statusNodes.forEach((node) => {
+      node.textContent = statuses[selected][node.dataset.homeStatus] || node.textContent;
+    });
+    managerStateNodes.forEach((node) => {
+      node.textContent = managerStates[selected][node.dataset.homeManagerState] || node.textContent;
+    });
+    managerNoteNodes.forEach((node) => {
+      node.textContent = managerNotes[selected][node.dataset.homeManagerNote] || node.textContent;
+    });
+    teamRoleNodes.forEach((node) => {
+      const index = Number(node.dataset.homeTeamRole);
+      const name = node.textContent.split(":").slice(1).join(":").trim();
+      node.textContent = (teamRoles[selected][index] || "") + ": " + name;
+    });
+    window.homePageI18n = {
+      language: selected,
+      statuses: statuses[selected],
+      buyShort: copy[selected].buyShort,
+      sellShort: copy[selected].sellShort,
+      midShort: copy[selected].midShort,
+      searchEmpty: selected === "en"
+        ? "No matching rate found. Try USD, EUR, UAH or a pair like EUR USD."
+        : "Нічого не знайдено. Спробуйте USD, EUR, UAH або пару на кшталт EUR USD.",
+      calcEmpty: selected === "en" ? "Enter an amount to calculate." : "Введіть суму для розрахунку.",
+      quoteLabels: quoteLabels[selected],
+      quoteSources: quoteSources[selected],
+    };
+    document.dispatchEvent(new CustomEvent("home-language-applied", { detail: { language: selected } }));
+  };
+
+  applyLanguage(document.documentElement.dataset.uiLang || "uk");
+  document.addEventListener("site-language-change", (event) => {
+    applyLanguage(event.detail && event.detail.language ? event.detail.language : "uk");
+  });
+})();
+</script>
+<script>
+(function () {
+  const node = document.getElementById("calculator-rates-data");
+  if (!node) return;
+
+  const rates = JSON.parse(node.textContent || "{}");
+  const sell = document.getElementById("calc-sell");
+  const buy = document.getElementById("calc-buy");
+  const amount = document.getElementById("calc-amount");
+  const result = document.getElementById("calc-result");
+  const quote = document.getElementById("calc-quote-line");
+  const summary = document.getElementById("calc-summary-line");
+  const swap = document.getElementById("calc-swap");
+  const calculator = document.getElementById("calculator");
+
+  if (!sell || !buy || !amount || !result || !quote || !summary || !swap) return;
+
+  const parse = (value) => Number.parseFloat(String(value).replace(",", "."));
+  const precision = (code) => (code === "UAH" ? 2 : 4);
+  const convert = (sum, from, to) => {
+    const rateFrom = Number(rates[from]);
+    const rateTo = Number(rates[to]);
+    if (!rateFrom || !rateTo) return 0;
+    return sum * rateFrom / rateTo;
+  };
+
+  const focusCalculator = () => {
+    if (calculator) calculator.scrollIntoView({ block: "start" });
+    amount.focus({ preventScroll: true });
+    amount.select();
+  };
+
+  const applyPair = (from, to) => {
+    if (!rates[from] || !rates[to]) return;
+    sell.value = from;
+    buy.value = to;
+    update();
+    focusCalculator();
+  };
+
+  function update() {
+    const ui = window.homePageI18n || {};
+    const sum = parse(amount.value);
+    const from = sell.value;
+    const to = buy.value;
+    const preview = convert(1, from, to);
+
+    quote.textContent = "1 " + from + " = " + preview.toFixed(precision(to)) + " " + to;
+
+    if (!sum || sum <= 0) {
+      result.value = "";
+      summary.textContent = ui.calcEmpty || "Введіть суму для розрахунку.";
+      return;
+    }
+
+    const output = convert(sum, from, to);
+    result.value = output.toFixed(precision(to));
+    summary.textContent = sum.toFixed(precision(from)) + " " + from + " ~ " + output.toFixed(precision(to)) + " " + to;
+  }
+
+  [sell, buy, amount].forEach((element) => {
+    element.addEventListener("input", update);
+    element.addEventListener("change", update);
+  });
+
+  swap.addEventListener("click", () => {
+    const current = sell.value;
+    sell.value = buy.value;
+    buy.value = current;
+    update();
+  });
+
+  document.querySelectorAll("[data-focus-calculator]").forEach((element) => {
+    element.addEventListener("click", (event) => {
+      event.preventDefault();
+      focusCalculator();
+    });
+  });
+
+  document.querySelectorAll("[data-calc-from][data-calc-to]").forEach((element) => {
+    const activate = () => applyPair(element.dataset.calcFrom, element.dataset.calcTo);
+    element.addEventListener("click", activate);
+    element.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activate();
+      }
+    });
+  });
+
+  update();
+})();
+</script>
+<script>
+(function () {
+  const node = document.getElementById("cash-quotes-data");
+  const input = document.getElementById("currency-rate-search");
+  const results = document.getElementById("currency-search-results");
+
+  if (!node || !input || !results) return;
+
+  const quotes = JSON.parse(node.textContent || "[]");
+  const normalize = (value) => String(value || "").trim().toUpperCase();
+
+  const localized = () => window.homePageI18n || {};
+  const quoteLabel = (quote) => {
+    const ui = localized();
+    const index = quotes.findIndex((item) => item.pair === quote.pair);
+    return (ui.quoteLabels && ui.quoteLabels[index]) || quote.label;
+  };
+
+  const formatResult = (quote) => {
+    const ui = localized();
+    const label = quoteLabel(quote);
+    return (
+    '<div class="search-rate-item" data-calc-from="' + quote.base_currency + '" data-calc-to="' + quote.quote_currency + '" tabindex="0" role="button">' +
+    '<strong>' + quote.pair + ' • ' + label + '</strong>' +
+    '<span>' + (ui.buyShort || 'Купівля') + ' ' + Number(quote.buy_rate).toFixed(quote.decimals) + ' • ' + (ui.sellShort || 'Продаж') + ' ' + Number(quote.sell_rate).toFixed(quote.decimals) + ' • ' + (ui.midShort || 'Середній') + ' ' + Number(quote.mid_rate).toFixed(quote.decimals) + '</span>' +
+    '</div>'
+    );
+  };
+
+  const bindResultActions = () => {
+    results.querySelectorAll("[data-calc-from][data-calc-to]").forEach((element) => {
+      const activate = () => {
+        const from = element.getAttribute("data-calc-from");
+        const to = element.getAttribute("data-calc-to");
+        if (!from || !to) return;
+        const calculatorSell = document.getElementById("calc-sell");
+        const calculatorBuy = document.getElementById("calc-buy");
+        const calculatorAmount = document.getElementById("calc-amount");
+        const calculatorPanel = document.getElementById("calculator");
+        if (calculatorSell && calculatorBuy) {
+          calculatorSell.value = from;
+          calculatorBuy.value = to;
+          if (calculatorPanel) calculatorPanel.scrollIntoView({ block: "start", behavior: "smooth" });
+          if (calculatorAmount) {
+            calculatorAmount.focus({ preventScroll: true });
+            calculatorAmount.select();
+          }
+          calculatorBuy.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      };
+
+      element.addEventListener("click", activate);
+      element.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activate();
+        }
+      });
+    });
+  };
+
+  function render(items) {
+    if (!items.length) {
+      results.innerHTML = '<div class="header-search-empty">' + (localized().searchEmpty || 'Нічого не знайдено. Спробуйте USD, EUR, UAH або пару на кшталт EUR USD.') + '</div>';
+      return;
+    }
+
+    results.innerHTML = items.slice(0, 6).map(formatResult).join('');
+    bindResultActions();
+  }
+
+  input.addEventListener("input", () => {
+    const query = normalize(input.value);
+    if (!query) {
+      render(quotes);
+      return;
+    }
+
+    const tokens = query.split(/\s+|\/|,|;/).filter(Boolean);
+    const filtered = quotes
+      .map((quote) => {
+        const fields = [
+          normalize(quote.pair),
+          normalize(quote.label),
+          normalize(quoteLabel(quote)),
+          normalize(quote.base_currency),
+          normalize(quote.quote_currency),
+        ];
+        let score = 0;
+
+        tokens.forEach((token) => {
+          if (fields.some((field) => field === token)) score += 4;
+          else if (fields.some((field) => field.includes(token))) score += 2;
+        });
+
+        if (tokens.length >= 2) {
+          const directPair = tokens[0] + "/" + tokens[1];
+          const reversePair = tokens[1] + "/" + tokens[0];
+          if (normalize(quote.pair) === directPair) score += 8;
+          else if (normalize(quote.pair) === reversePair) score += 5;
+        }
+
+        return { quote, score };
+      })
+      .filter((item) => item.score > 0)
+      .sort((left, right) => right.score - left.score)
+      .map((item) => item.quote);
+
+    render(filtered);
+  });
+
+  render(quotes);
+  document.addEventListener("home-language-applied", function () {
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+})();
+</script>
+</body>
+</html>

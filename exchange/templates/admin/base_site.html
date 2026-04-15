@@ -1,0 +1,13 @@
+﻿{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ site_title|default:_('Django site admin') }}{% if subtitle %} | {{ subtitle }}{% endif %}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'exchange/admin.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include "includes/shared_headers.html" %}
+{% endblock %}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Менеджер</title>
+    <style>
+        body{margin:0;font:16px/1.6 "Segoe UI",sans-serif;background:linear-gradient(180deg,#fff8eb,#eff7fb);color:#173150}.page{width:min(1320px,calc(100% - 32px));margin:28px auto;display:grid;gap:20px}.card{background:#fff;border:1px solid #dbe7ef;border-radius:24px;box-shadow:0 16px 30px rgba(16,27,44,.08);padding:24px}.hero{background:linear-gradient(135deg,#16324f,#1d5f88 60%,#16907b);color:#fff}.hero h1,.card h2,.card h3,p{margin:0}.hero h1{margin-top:8px;font-size:clamp(30px,4vw,46px)}.eyebrow{display:inline-block;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.stats,.queue{display:grid;gap:14px}.stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.stat,.queue-item{background:#fff;border:1px solid #dbe7ef;border-radius:20px;padding:18px}.stat strong{display:block;font-size:28px}.muted{color:#61738c}.toolbar label{display:grid;gap:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#5b6b84}.search-input,select{width:100%;padding:12px 14px;border:1px solid #dbe7ef;border-radius:14px;font:inherit}.btn,button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:12px;font-weight:800;text-decoration:none;border:0;background:linear-gradient(135deg,#1790c7,#16907b);color:#fff;cursor:pointer}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.badge{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:800;background:#eef5ff;color:#2a5ea7}.msg{padding:14px 16px;border-radius:16px;font-weight:700}.msg.error{background:#ffe9e9;color:#9d2a2a}.msg.success{background:#e6f8f2;color:#0d6757}.table-wrap{overflow:auto;margin-top:16px}table{width:100%;border-collapse:collapse;min-width:860px}th,td{text-align:left;padding:14px 12px;border-bottom:1px solid #eef1f5}th{font-size:12px;color:#61738c;text-transform:uppercase;letter-spacing:.08em}
+    </style>
+</head>
+<body>
+    {% include "includes/shared_headers.html" %}
+    <div class="page">
+        {% if error_message %}<div class="msg error" id="manager-error">{{ error_message }}</div>{% endif %}
+        {% if success_message %}<div class="msg success" id="manager-success">{{ success_message }}</div>{% endif %}
+        <section class="card hero">
+            <span class="eyebrow" id="manager-eyebrow">Вкладка менеджера</span>
+            <h1 id="manager-title">Контроль черги замовлень</h1>
+            <p id="manager-text">Менеджер бачить усю чергу, контролює статуси та передає заявки працівнику на окремій сторінці.</p>
+        </section>
+        <section class="stats">
+            <div class="stat"><strong>{{ stats.total }}</strong><span class="muted" id="manager-stat-total">усього заявок</span></div>
+            <div class="stat"><strong>{{ queue_count }}</strong><span class="muted" id="manager-stat-queue">активних у черзі</span></div>
+            <div class="stat"><strong>{{ stats.confirmed }}</strong><span class="muted" id="manager-stat-confirmed">підтверджені</span></div>
+            <div class="stat"><strong>{{ stats.done }}</strong><span class="muted" id="manager-stat-done">виконані</span></div>
+        </section>
+        <section class="card toolbar">
+            <form method="get" action="/manager/">
+                <label id="manager-search-label">Пошук замовлень
+                    <input class="search-input" type="search" name="q" value="{{ search_query }}" placeholder="Введіть ID, пару валют або статус" id="manager-search-input">
+                </label>
+            </form>
+        </section>
+        <section class="card">
+            <h2 id="manager-queue-title">Черга менеджера</h2>
+            <p class="muted" id="manager-queue-text">Тут менеджер переглядає активні заявки й оновлює їх статуси.</p>
+            <div class="queue" style="margin-top:16px;">
+                {% for order in queue_orders %}
+                    <article class="queue-item">
+                        <div class="row" style="justify-content:space-between;">
+                            <div><h3>#{{ order.id }} • {{ order.pair_label }}</h3><p class="muted">{{ order.manager_note }}</p></div>
+                            <span class="badge" data-status-code="{{ order.status }}"></span>
+                        </div>
+                        <div class="row" style="margin-top:12px;">
+                            <span class="muted" data-manager-amount="{{ order.amount|floatformat:2 }}"></span>
+                            <span class="muted" data-manager-rate="{{ order.rate|floatformat:4 }}"></span>
+                            <span class="muted" data-manager-result="{{ order.result|floatformat:2 }}"></span>
+                            <span class="muted" data-manager-time="{% if order.planned_for %}{{ order.planned_for|date:'d.m.Y H:i' }}{% endif %}"></span>
+                        </div>
+                        <form method="post" action="/orders/{{ order.id }}/status/" style="margin-top:12px;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="/manager/">
+                            <div class="row">
+                                <select name="status">{% for code, label in status_choices %}<option value="{{ code }}" data-status-code="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+                                <button type="submit" data-manager-update>Оновити статус</button>
+                                <a class="btn" href="/worker/?selected_order={{ order.id }}" data-manager-transfer>Передати працівнику</a>
+                            </div>
+                        </form>
+                    </article>
+                {% empty %}
+                    <p class="muted" id="manager-queue-empty">У менеджера поки немає активних заявок.</p>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="card">
+            <h2 id="manager-all-title">Усі замовлення</h2>
+            <p class="muted" id="manager-all-text">Повний список для контролю історії та поточного навантаження.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th id="manager-th-id">ID</th><th id="manager-th-pair">Пара</th><th id="manager-th-amount">Сума</th><th id="manager-th-rate">Курс</th><th id="manager-th-result">Результат</th><th id="manager-th-planned">Заплановано</th><th id="manager-th-status">Статус</th><th id="manager-th-created">Створено</th></tr></thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.pair_label }}</td>
+                                <td>{{ order.amount|floatformat:2 }}</td>
+                                <td>{{ order.rate|floatformat:4 }}</td>
+                                <td>{{ order.result|floatformat:2 }}</td>
+                                <td data-manager-planned-cell="{% if order.planned_for %}{{ order.planned_for|date:'d.m.Y H:i' }}{% endif %}">{% if order.planned_for %}{{ order.planned_for|date:"d.m.Y H:i" }}{% else %}Не вказано{% endif %}</td>
+                                <td><span class="badge" data-status-code="{{ order.status }}"></span></td>
+                                <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="8" class="muted" id="manager-table-empty">Замовлення за поточним пошуком не знайдені.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+    <script>
+    (function(){
+        const errorNode = document.getElementById('manager-error');
+        const successNode = document.getElementById('manager-success');
+        const searchInput = document.getElementById('manager-search-input');
+        const errorMap = {'The selected status is not valid.':'Обраний статус некоректний.'};
+        const successMap = {'The order status has been updated.':'Статус замовлення оновлено.'};
+        const copy = {
+            en:{
+                title:'Manager',
+                eyebrow:'Manager tab',
+                hero:'Order queue control',
+                text:'The manager sees the whole queue, controls statuses, and passes orders to the worker on a separate page.',
+                statTotal:'total orders',
+                statQueue:'active in queue',
+                statConfirmed:'confirmed',
+                statDone:'completed',
+                search:'Order search',
+                searchPlaceholder:'Enter ID, currency pair, or status',
+                queueTitle:'Manager queue',
+                queueText:'The manager reviews active orders here and updates their statuses.',
+                amount:'Amount',
+                rate:'Rate',
+                result:'Result',
+                time:'Time',
+                timeUnset:'not scheduled',
+                update:'Update status',
+                transfer:'Send to worker',
+                queueEmpty:'The manager has no active orders yet.',
+                allTitle:'All orders',
+                allText:'Full list for reviewing history and current workload.',
+                thPair:'Pair',
+                thAmount:'Amount',
+                thRate:'Rate',
+                thResult:'Result',
+                thPlanned:'Planned',
+                thStatus:'Status',
+                thCreated:'Created',
+                plannedEmpty:'Not specified',
+                tableEmpty:'No orders matched the current search.',
+                statuses:{new:'New',confirmed:'Confirmed',in_progress:'In Progress',done:'Completed',canceled:'Canceled',error:'Error'}
+            },
+            uk:{
+                title:'Менеджер',
+                eyebrow:'Вкладка менеджера',
+                hero:'Контроль черги замовлень',
+                text:'Менеджер бачить усю чергу, контролює статуси та передає заявки працівнику на окремій сторінці.',
+                statTotal:'усього заявок',
+                statQueue:'активних у черзі',
+                statConfirmed:'підтверджені',
+                statDone:'виконані',
+                search:'Пошук замовлень',
+                searchPlaceholder:'Введіть ID, пару валют або статус',
+                queueTitle:'Черга менеджера',
+                queueText:'Тут менеджер переглядає активні заявки й оновлює їх статуси.',
+                amount:'Сума',
+                rate:'Курс',
+                result:'Результат',
+                time:'Час',
+                timeUnset:'не задано',
+                update:'Оновити статус',
+                transfer:'Передати працівнику',
+                queueEmpty:'У менеджера поки немає активних заявок.',
+                allTitle:'Усі замовлення',
+                allText:'Повний список для контролю історії та поточного навантаження.',
+                thPair:'Пара',
+                thAmount:'Сума',
+                thRate:'Курс',
+                thResult:'Результат',
+                thPlanned:'Заплановано',
+                thStatus:'Статус',
+                thCreated:'Створено',
+                plannedEmpty:'Не вказано',
+                tableEmpty:'Замовлення за поточним пошуком не знайдені.',
+                statuses:{new:'Нове',confirmed:'Підтверджене',in_progress:'В процесі',done:'Виконане',canceled:'Скасоване',error:'Помилка'}
+            }
+        };
+        function applyLanguage(lang){
+            const x = lang === 'uk' ? 'uk' : 'en';
+            document.title = copy[x].title;
+            document.getElementById('manager-eyebrow').textContent = copy[x].eyebrow;
+            document.getElementById('manager-title').textContent = copy[x].hero;
+            document.getElementById('manager-text').textContent = copy[x].text;
+            document.getElementById('manager-stat-total').textContent = copy[x].statTotal;
+            document.getElementById('manager-stat-queue').textContent = copy[x].statQueue;
+            document.getElementById('manager-stat-confirmed').textContent = copy[x].statConfirmed;
+            document.getElementById('manager-stat-done').textContent = copy[x].statDone;
+            document.getElementById('manager-search-label').childNodes[0].nodeValue = copy[x].search;
+            searchInput.placeholder = copy[x].searchPlaceholder;
+            document.getElementById('manager-queue-title').textContent = copy[x].queueTitle;
+            document.getElementById('manager-queue-text').textContent = copy[x].queueText;
+            if (document.getElementById('manager-queue-empty')) document.getElementById('manager-queue-empty').textContent = copy[x].queueEmpty;
+            document.getElementById('manager-all-title').textContent = copy[x].allTitle;
+            document.getElementById('manager-all-text').textContent = copy[x].allText;
+            document.getElementById('manager-th-pair').textContent = copy[x].thPair;
+            document.getElementById('manager-th-amount').textContent = copy[x].thAmount;
+            document.getElementById('manager-th-rate').textContent = copy[x].thRate;
+            document.getElementById('manager-th-result').textContent = copy[x].thResult;
+            document.getElementById('manager-th-planned').textContent = copy[x].thPlanned;
+            document.getElementById('manager-th-status').textContent = copy[x].thStatus;
+            document.getElementById('manager-th-created').textContent = copy[x].thCreated;
+            if (document.getElementById('manager-table-empty')) document.getElementById('manager-table-empty').textContent = copy[x].tableEmpty;
+            document.querySelectorAll('[data-status-code]').forEach((n)=>{const c=n.getAttribute('data-status-code');if(copy[x].statuses[c])n.textContent=copy[x].statuses[c];});
+            document.querySelectorAll('select option[data-status-code]').forEach((n)=>{const c=n.getAttribute('data-status-code');if(copy[x].statuses[c])n.textContent=copy[x].statuses[c];});
+            document.querySelectorAll('[data-manager-amount]').forEach((node)=>{ node.textContent = copy[x].thAmount + ': ' + node.dataset.managerAmount; });
+            document.querySelectorAll('[data-manager-rate]').forEach((node)=>{ node.textContent = copy[x].thRate + ': ' + node.dataset.managerRate; });
+            document.querySelectorAll('[data-manager-result]').forEach((node)=>{ node.textContent = copy[x].thResult + ': ' + node.dataset.managerResult; });
+            document.querySelectorAll('[data-manager-time]').forEach((node)=>{ node.textContent = copy[x].time + ': ' + (node.dataset.managerTime || copy[x].timeUnset); });
+            document.querySelectorAll('[data-manager-update]').forEach((node)=>{ node.textContent = copy[x].update; });
+            document.querySelectorAll('[data-manager-transfer]').forEach((node)=>{ node.textContent = copy[x].transfer; });
+            document.querySelectorAll('[data-manager-planned-cell]').forEach((node)=>{ node.textContent = node.dataset.managerPlannedCell || copy[x].plannedEmpty; });
+            if (errorNode) {
+                const en = errorNode.dataset.enText || errorNode.textContent.trim();
+                errorNode.dataset.enText = en;
+                errorNode.textContent = x === 'uk' ? (errorMap[en] || en) : en;
+            }
+            if (successNode) {
+                const en = successNode.dataset.enText || successNode.textContent.trim();
+                successNode.dataset.enText = en;
+                successNode.textContent = x === 'uk' ? (successMap[en] || en) : en;
+            }
+        }
+        document.addEventListener('site-language-change',(e)=>applyLanguage(e.detail.language));
+        applyLanguage(window.siteUiLanguage||document.documentElement.dataset.uiLang||'uk');
+    })();
+    </script>
+</body>
+</html>

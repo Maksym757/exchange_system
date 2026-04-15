@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Працівник</title>
+    <style>
+        body{margin:0;font:16px/1.6 "Segoe UI",sans-serif;background:linear-gradient(180deg,#fff8eb,#eff7fb);color:#173150}.page{width:min(1320px,calc(100% - 32px));margin:28px auto;display:grid;gap:20px}.card{background:#fff;border:1px solid #dbe7ef;border-radius:24px;box-shadow:0 16px 30px rgba(16,27,44,.08);padding:24px}.hero{background:linear-gradient(135deg,#16324f,#1d5f88 60%,#16907b);color:#fff}.hero h1,.card h2,.card h3,p,ul{margin:0}.hero h1{margin-top:8px;font-size:clamp(30px,4vw,46px)}.eyebrow{display:inline-block;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px}.stats,.queue,.replies{display:grid;gap:14px}.stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.stat,.detail,.reply,.queue-item{background:#fff;border:1px solid #dbe7ef;border-radius:20px;padding:18px}.stat strong,.detail strong{display:block;font-size:28px}.muted{color:#61738c}.field{display:grid;gap:6px;margin-top:12px;font-weight:700}input,select{width:100%;padding:12px 14px;border:1px solid #dbe7ef;border-radius:14px;font:inherit}.btn,.ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:12px;font-weight:800;text-decoration:none}.btn{border:0;background:linear-gradient(135deg,#1790c7,#16907b);color:#fff;cursor:pointer}.ghost{border:1px solid #dbe7ef;background:#fff;color:#173150}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:16px 0}.badge{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:800;background:#eef5ff;color:#2a5ea7}.msg{padding:14px 16px;border-radius:16px;font-weight:700}.msg.error{background:#ffe9e9;color:#9d2a2a}.msg.success{background:#e6f8f2;color:#0d6757}@media (max-width:1000px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    {% include "includes/shared_headers.html" %}
+    <div class="page">
+        {% if error_message %}<div class="msg error" id="worker-error">{{ error_message }}</div>{% endif %}
+        {% if success_message %}<div class="msg success" id="worker-success">{{ success_message }}</div>{% endif %}
+        <section class="card hero">
+            <span class="eyebrow" id="worker-eyebrow">Вкладка працівника</span>
+            <h1 id="worker-title">Опрацювання заявок на обмін</h1>
+            <p id="worker-text">Працівник створює нові заявки, відкриває вибране замовлення і веде активну операцію окремо від вкладки замовлення.</p>
+        </section>
+        <section class="stats">
+            <div class="stat"><strong>{{ stats.total }}</strong><span class="muted" id="worker-stat-total">заявок у роботі</span></div>
+            <div class="stat"><strong>{{ queue_count }}</strong><span class="muted" id="worker-stat-queue">активних у черзі</span></div>
+            <div class="stat"><strong>{{ stats.new }}</strong><span class="muted" id="worker-stat-new">нові</span></div>
+            <div class="stat"><strong>{{ stats.in_progress }}</strong><span class="muted" id="worker-stat-progress">в роботі</span></div>
+        </section>
+        <section class="grid">
+            <aside class="card">
+                <h2 id="worker-create-title">Створити нову заявку</h2>
+                <p class="muted" id="worker-create-text">Окрема робоча форма працівника.</p>
+                <form method="post" action="/worker/">
+                    {% csrf_token %}
+                    <label class="field" id="worker-sell-label">Валюта продажу<select name="sell_currency" required>{% for code in currencies %}<option value="{{ code }}" {% if form_data.sell_currency == code %}selected{% endif %}>{{ code }}</option>{% endfor %}</select></label>
+                    <label class="field" id="worker-buy-label">Валюта купівлі<select name="buy_currency" required>{% for code in currencies %}<option value="{{ code }}" {% if form_data.buy_currency == code %}selected{% endif %}>{{ code }}</option>{% endfor %}</select></label>
+                    <label class="field" id="worker-amount-label">Сума<input type="text" name="amount" value="{{ form_data.amount }}" required></label>
+                    <label class="field" id="worker-rate-label">Курс<input type="text" name="rate" value="{{ form_data.rate }}" required></label>
+                    <label class="field" id="worker-planned-label">Заплановано на<input type="datetime-local" name="planned_for" value="{{ form_data.planned_for }}"></label>
+                    <button class="btn" type="submit" style="margin-top:12px;" id="worker-create-submit">Створити замовлення</button>
+                </form>
+            </aside>
+            <div class="card">
+                <div class="row" style="justify-content:space-between;">
+                    <div>
+                        <h2 id="worker-selected-title">Вибране замовлення</h2>
+                        <p class="muted" id="worker-selected-text">Працівник бачить деталі, статус і підказки.</p>
+                    </div>
+                    {% if selected_order %}<span class="badge" data-status-code="{{ selected_order.status }}"></span>{% endif %}
+                </div>
+                {% if selected_order %}
+                    <div class="detail-grid">
+                        <div class="detail"><span class="muted" id="worker-detail-id">ID</span><strong>#{{ selected_order.id }}</strong></div>
+                        <div class="detail"><span class="muted" id="worker-detail-pair">Пара</span><strong>{{ selected_order.pair_label }}</strong></div>
+                        <div class="detail"><span class="muted" id="worker-detail-amount">Сума</span><strong>{{ selected_order.amount|floatformat:2 }}</strong></div>
+                        <div class="detail"><span class="muted" id="worker-detail-rate">Курс</span><strong>{{ selected_order.rate|floatformat:4 }}</strong></div>
+                        <div class="detail"><span class="muted" id="worker-detail-result">Результат</span><strong>{{ selected_order.result|floatformat:2 }}</strong></div>
+                        <div class="detail"><span class="muted" id="worker-detail-planned">Заплановано</span><strong id="worker-planned-value" data-raw-value="{% if selected_order.planned_for %}{{ selected_order.planned_for|date:'d.m.Y H:i' }}{% endif %}">{% if selected_order.planned_for %}{{ selected_order.planned_for|date:"d.m.Y H:i" }}{% else %}Не вказано{% endif %}</strong></div>
+                    </div>
+                    <form method="post" action="/orders/{{ selected_order.id }}/status/">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="/worker/">
+                        <label class="field" id="worker-status-label">Статус<select name="status">{% for code, label in status_choices %}<option value="{{ code }}" data-status-code="{{ code }}" {% if selected_order.status == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+                        <div class="row" style="margin-top:12px;">
+                            <button class="btn" type="submit" id="worker-save-status">Зберегти статус</button>
+                            <a class="ghost" href="{{ support_phone_link }}" id="worker-support-link">Подзвонити в підтримку</a>
+                        </div>
+                    </form>
+                    <div class="replies" style="margin-top:16px;">
+                        <div class="reply">
+                            <h3 id="worker-dialog-title">Підказки для діалогу</h3>
+                            <ul style="padding-left:18px;margin-top:12px;">
+                                {% for message in worker_assistant_messages %}<li>{{ message }}</li>{% endfor %}
+                            </ul>
+                        </div>
+                        {% for reply in worker_quick_replies %}
+                            <div class="reply"><h3 data-worker-quick-reply="{{ forloop.counter }}">Швидка відповідь {{ forloop.counter }}</h3><p class="muted">{{ reply }}</p></div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="muted" style="margin-top:16px;" id="worker-empty-selected">Виберіть заявку з активної черги.</p>
+                {% endif %}
+            </div>
+        </section>
+        <section class="card">
+            <h2 id="worker-queue-title">Активні заявки працівника</h2>
+            <p class="muted" id="worker-queue-text">Нові й підтверджені заявки для швидкого відкриття.</p>
+            <div class="queue" style="margin-top:16px;">
+                {% for order in queue_orders %}
+                    <article class="queue-item">
+                        <div class="row" style="justify-content:space-between;">
+                            <div><h3>#{{ order.id }} • {{ order.pair_label }}</h3><p class="muted">{{ order.manager_note }}</p></div>
+                            <span class="badge" data-status-code="{{ order.status }}"></span>
+                        </div>
+                        <div class="row" style="margin-top:12px;">
+                            <span class="muted" data-worker-queue-amount="{{ order.amount|floatformat:2 }}"></span>
+                            <span class="muted" data-worker-queue-rate="{{ order.rate|floatformat:4 }}"></span>
+                            <span class="muted" data-worker-queue-result="{{ order.result|floatformat:2 }}"></span>
+                            <span class="muted" data-worker-queue-time="{% if order.planned_for %}{{ order.planned_for|date:'d.m.Y H:i' }}{% endif %}"></span>
+                        </div>
+                        <div class="row" style="margin-top:12px;">
+                            <a class="btn" href="/worker/?selected_order={{ order.id }}" data-worker-open-order>Відкрити заявку</a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <p class="muted" id="worker-queue-empty">У працівника поки немає активних заявок.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+    <script>
+    (function(){
+        const errorNode = document.getElementById('worker-error');
+        const successNode = document.getElementById('worker-success');
+        const errorMap = {
+            'Please choose the sell currency.': 'Оберіть валюту продажу.',
+            'Please choose the buy currency.': 'Оберіть валюту купівлі.',
+            'Sell and buy currencies must be different.': 'Валюта продажу і купівлі мають відрізнятися.',
+            'Please enter a valid amount.': 'Вкажіть коректну суму.',
+            'Please enter a valid exchange rate.': 'Вкажіть коректний курс обміну.',
+            'Please enter a valid planned date and time.': 'Вкажіть коректну дату і час.',
+            'The selected status is not valid.': 'Обраний статус некоректний.'
+        };
+        const successMap = {
+            'The order has been created.': 'Замовлення створено.',
+            'The order status has been updated.': 'Статус замовлення оновлено.'
+        };
+        const copy = {
+            en:{
+                title:'Worker',
+                eyebrow:'Worker tab',
+                hero:'Exchange order processing',
+                text:'The worker creates new orders, opens the selected order, and handles the active operation separately from the orders tab.',
+                statTotal:'orders in progress',
+                statQueue:'active in queue',
+                statNew:'new',
+                statProgress:'in progress',
+                createTitle:'Create a new order',
+                createText:'Separate workspace form for the worker.',
+                sell:'Sell currency',
+                buy:'Buy currency',
+                amount:'Amount',
+                rate:'Rate',
+                planned:'Planned for',
+                createSubmit:'Create order',
+                selectedTitle:'Selected order',
+                selectedText:'The worker sees details, status, and response prompts.',
+                detailId:'ID',
+                detailPair:'Pair',
+                detailAmount:'Amount',
+                detailRate:'Rate',
+                detailResult:'Result',
+                detailPlanned:'Planned',
+                detailPlannedEmpty:'Not specified',
+                status:'Status',
+                save:'Save status',
+                support:'Call support',
+                dialog:'Conversation prompts',
+                quickReply:'Quick reply',
+                emptySelected:'Choose an order from the active queue.',
+                queueTitle:'Active worker orders',
+                queueText:'New and confirmed orders for quick opening.',
+                queueEmpty:'The worker has no active orders yet.',
+                open:'Open order',
+                time:'Time',
+                timeUnset:'not scheduled',
+                statuses:{new:'New',confirmed:'Confirmed',in_progress:'In Progress',done:'Completed',canceled:'Canceled',error:'Error'}
+            },
+            uk:{
+                title:'Працівник',
+                eyebrow:'Вкладка працівника',
+                hero:'Опрацювання заявок на обмін',
+                text:'Працівник створює нові заявки, відкриває вибране замовлення і веде активну операцію окремо від вкладки замовлення.',
+                statTotal:'заявок у роботі',
+                statQueue:'активних у черзі',
+                statNew:'нові',
+                statProgress:'в роботі',
+                createTitle:'Створити нову заявку',
+                createText:'Окрема робоча форма працівника.',
+                sell:'Валюта продажу',
+                buy:'Валюта купівлі',
+                amount:'Сума',
+                rate:'Курс',
+                planned:'Заплановано на',
+                createSubmit:'Створити замовлення',
+                selectedTitle:'Вибране замовлення',
+                selectedText:'Працівник бачить деталі, статус і підказки.',
+                detailId:'ID',
+                detailPair:'Пара',
+                detailAmount:'Сума',
+                detailRate:'Курс',
+                detailResult:'Результат',
+                detailPlanned:'Заплановано',
+                detailPlannedEmpty:'Не вказано',
+                status:'Статус',
+                save:'Зберегти статус',
+                support:'Подзвонити в підтримку',
+                dialog:'Підказки для діалогу',
+                quickReply:'Швидка відповідь',
+                emptySelected:'Виберіть заявку з активної черги.',
+                queueTitle:'Активні заявки працівника',
+                queueText:'Нові й підтверджені заявки для швидкого відкриття.',
+                queueEmpty:'У працівника поки немає активних заявок.',
+                open:'Відкрити заявку',
+                time:'Час',
+                timeUnset:'не задано',
+                statuses:{new:'Нове',confirmed:'Підтверджене',in_progress:'В процесі',done:'Виконане',canceled:'Скасоване',error:'Помилка'}
+            }
+        };
+        function applyLanguage(lang){
+            const x = lang === 'uk' ? 'uk' : 'en';
+            document.title = copy[x].title;
+            document.getElementById('worker-eyebrow').textContent = copy[x].eyebrow;
+            document.getElementById('worker-title').textContent = copy[x].hero;
+            document.getElementById('worker-text').textContent = copy[x].text;
+            document.getElementById('worker-stat-total').textContent = copy[x].statTotal;
+            document.getElementById('worker-stat-queue').textContent = copy[x].statQueue;
+            document.getElementById('worker-stat-new').textContent = copy[x].statNew;
+            document.getElementById('worker-stat-progress').textContent = copy[x].statProgress;
+            document.getElementById('worker-create-title').textContent = copy[x].createTitle;
+            document.getElementById('worker-create-text').textContent = copy[x].createText;
+            document.getElementById('worker-sell-label').childNodes[0].nodeValue = copy[x].sell;
+            document.getElementById('worker-buy-label').childNodes[0].nodeValue = copy[x].buy;
+            document.getElementById('worker-amount-label').childNodes[0].nodeValue = copy[x].amount;
+            document.getElementById('worker-rate-label').childNodes[0].nodeValue = copy[x].rate;
+            document.getElementById('worker-planned-label').childNodes[0].nodeValue = copy[x].planned;
+            document.getElementById('worker-create-submit').textContent = copy[x].createSubmit;
+            document.getElementById('worker-selected-title').textContent = copy[x].selectedTitle;
+            document.getElementById('worker-selected-text').textContent = copy[x].selectedText;
+            if (document.getElementById('worker-detail-id')) document.getElementById('worker-detail-id').textContent = copy[x].detailId;
+            if (document.getElementById('worker-detail-pair')) document.getElementById('worker-detail-pair').textContent = copy[x].detailPair;
+            if (document.getElementById('worker-detail-amount')) document.getElementById('worker-detail-amount').textContent = copy[x].detailAmount;
+            if (document.getElementById('worker-detail-rate')) document.getElementById('worker-detail-rate').textContent = copy[x].detailRate;
+            if (document.getElementById('worker-detail-result')) document.getElementById('worker-detail-result').textContent = copy[x].detailResult;
+            if (document.getElementById('worker-detail-planned')) document.getElementById('worker-detail-planned').textContent = copy[x].detailPlanned;
+            if (document.getElementById('worker-planned-value')) {
+                const rawValue = document.getElementById('worker-planned-value').dataset.rawValue || '';
+                document.getElementById('worker-planned-value').textContent = rawValue || copy[x].detailPlannedEmpty;
+            }
+            if (document.getElementById('worker-status-label')) document.getElementById('worker-status-label').childNodes[0].nodeValue = copy[x].status;
+            if (document.getElementById('worker-save-status')) document.getElementById('worker-save-status').textContent = copy[x].save;
+            if (document.getElementById('worker-support-link')) document.getElementById('worker-support-link').textContent = copy[x].support;
+            if (document.getElementById('worker-dialog-title')) document.getElementById('worker-dialog-title').textContent = copy[x].dialog;
+            document.querySelectorAll('[data-worker-quick-reply]').forEach((node)=>{ node.textContent = copy[x].quickReply + ' ' + node.dataset.workerQuickReply; });
+            if (document.getElementById('worker-empty-selected')) document.getElementById('worker-empty-selected').textContent = copy[x].emptySelected;
+            document.getElementById('worker-queue-title').textContent = copy[x].queueTitle;
+            document.getElementById('worker-queue-text').textContent = copy[x].queueText;
+            if (document.getElementById('worker-queue-empty')) document.getElementById('worker-queue-empty').textContent = copy[x].queueEmpty;
+            document.querySelectorAll('[data-status-code]').forEach((n)=>{const c=n.getAttribute('data-status-code');if(copy[x].statuses[c])n.textContent=copy[x].statuses[c];});
+            document.querySelectorAll('select option[data-status-code]').forEach((n)=>{const c=n.getAttribute('data-status-code');if(copy[x].statuses[c])n.textContent=copy[x].statuses[c];});
+            document.querySelectorAll('[data-worker-queue-amount]').forEach((node)=>{ node.textContent = copy[x].amount + ': ' + node.dataset.workerQueueAmount; });
+            document.querySelectorAll('[data-worker-queue-rate]').forEach((node)=>{ node.textContent = copy[x].rate + ': ' + node.dataset.workerQueueRate; });
+            document.querySelectorAll('[data-worker-queue-result]').forEach((node)=>{ node.textContent = copy[x].detailResult + ': ' + node.dataset.workerQueueResult; });
+            document.querySelectorAll('[data-worker-queue-time]').forEach((node)=>{ node.textContent = copy[x].time + ': ' + (node.dataset.workerQueueTime || copy[x].timeUnset); });
+            document.querySelectorAll('[data-worker-open-order]').forEach((node)=>{ node.textContent = copy[x].open; });
+            if (errorNode) {
+                const en = errorNode.dataset.enText || errorNode.textContent.trim();
+                errorNode.dataset.enText = en;
+                errorNode.textContent = x === 'uk' ? (errorMap[en] || en) : en;
+            }
+            if (successNode) {
+                const en = successNode.dataset.enText || successNode.textContent.trim();
+                successNode.dataset.enText = en;
+                successNode.textContent = x === 'uk' ? (successMap[en] || en) : en;
+            }
+        }
+        document.addEventListener('site-language-change',(e)=>applyLanguage(e.detail.language));
+        applyLanguage(window.siteUiLanguage||document.documentElement.dataset.uiLang||'uk');
+    })();
+    </script>
+</body>
+</html>

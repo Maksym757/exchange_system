@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Access</title>
+    <style>
+        :root{--card:#fff;--accent:#c54a2d;--accent-dark:#9a3821;--text:#1b2430;--muted:#5d6773;--shadow:rgba(29,40,59,.12);--line:#e1e4ea}
+        body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#fff6e9,#e5eef2);font-family:"Trebuchet MS","Lucida Sans Unicode","Lucida Grande",sans-serif;color:var(--text)}
+        .page{min-height:calc(100vh - 70px);padding:36px 24px 48px;box-sizing:border-box}.container{width:min(980px,100%);margin:0 auto}.hero{margin-bottom:22px;text-align:center}.eyebrow{margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dark)}.subtitle{margin:0 auto;max-width:720px;color:var(--muted)}
+        .grid{display:grid;gap:20px;grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:var(--card);border-radius:18px;padding:28px;box-shadow:0 12px 28px var(--shadow)}.card-text,.hint,.helper{color:var(--muted)}.message{background:#ffe4e4;color:#9f1f1f;border-radius:10px;padding:10px 12px;margin-bottom:14px}label{display:block;margin:10px 0 6px;font-weight:700}input,select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;box-sizing:border-box;background:#fff;color:var(--text)}button{width:100%;margin-top:14px;border:none;border-radius:8px;padding:12px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}button:hover{background:var(--accent-dark)}.social-button{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font-weight:700;text-decoration:none;box-sizing:border-box}.divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:13px}.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}.links{margin-top:18px;display:flex;flex-wrap:wrap;gap:12px}.links a{color:var(--accent-dark);font-weight:700;text-decoration:none}code{font-family:Consolas,"Courier New",monospace;background:#f4f0ea;padding:1px 6px;border-radius:6px}@media (max-width:780px){.grid{grid-template-columns:1fr}.card{padding:22px}}
+    </style>
+</head>
+<body>
+    {% include "includes/shared_headers.html" %}
+    <div class="page">
+        <div class="container" data-selected-role="{{ selected_role }}" data-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}" data-google-enabled="{% if google_oauth_enabled %}true{% else %}false{% endif %}" data-google-uri="{{ google_redirect_uri_hint|escapejs }}">
+            <div class="hero">
+                <p class="eyebrow" id="role-eyebrow">Internal access</p>
+                <h1 id="role-title">Choose how you want to continue</h1>
+                <p class="subtitle" id="role-subtitle"></p>
+            </div>
+            <div class="grid">
+                <section class="card">
+                    <h2 id="role-card-title">Select a role</h2>
+                    <p class="card-text" id="role-card-text">Choose the role you want to open. The system will use it to send you to the correct section after sign-in.</p>
+                    <form method="post" action="/admin-panel/">
+                        {% csrf_token %}
+                        <label for="role-name" id="role-label">Role</label>
+                        <select id="role-name" name="role_name">
+                            {% for role_value, role_label in role_choices %}
+                                <option value="{{ role_value }}"{% if selected_role == role_value %} selected{% endif %}>{{ role_label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" id="role-submit">Open role</button>
+                    </form>
+                    <p class="hint" id="role-hint"></p>
+                </section>
+                <section class="card">
+                    <h2 id="workspace-title">Sign in to your workspace</h2>
+                    <p class="card-text" id="workspace-text">Use your internal account and the system will redirect you straight to the selected workspace.</p>
+                    {% if error_message %}<div class="message" id="role-error">{{ error_message }}</div>{% endif %}
+                    {% if selected_role != "user" %}
+                        <a class="social-button" href="{{ google_login_url }}">
+                            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                                <path fill="#EA4335" d="M9 7.2v3.67h5.1c-.22 1.18-.9 2.19-1.92 2.87l3.1 2.4C17.09 14.46 18 11.98 18 9.13c0-.63-.06-1.24-.18-1.83H9z"/>
+                                <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.16l-3.1-2.4c-.86.58-1.96.92-2.86.92-2.2 0-4.06-1.49-4.72-3.48H1.08v2.48A9 9 0 0 0 9 18z"/>
+                                <path fill="#4A90E2" d="M4.28 10.88A5.4 5.4 0 0 1 4 9c0-.65.1-1.28.28-1.88V4.64H1.08A9 9 0 0 0 0 9c0 1.45.35 2.82 1.08 4.36l3.2-2.48z"/>
+                                <path fill="#FBBC05" d="M9 3.58c1.32 0 2.5.46 3.43 1.35l2.57-2.57C13.46.91 11.42 0 9 0A9 9 0 0 0 1.08 4.64l3.2 2.48C4.94 5.07 6.8 3.58 9 3.58z"/>
+                            </svg>
+                            <span id="google-label">Sign in with Google</span>
+                        </a>
+                        <p class="helper" id="google-helper"></p>
+                        <div class="divider" id="divider-text">or</div>
+                    {% endif %}
+                    <form method="post" action="/admin-panel/auth/">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next_url }}">
+                        <input type="hidden" name="role" value="{{ selected_role }}">
+                        <label for="login-username" id="login-username-label">Username</label>
+                        <input id="login-username" type="text" name="username" value="{{ username }}" required>
+                        <label for="login-password" id="login-password-label">Password</label>
+                        <input id="login-password" type="password" name="password" required>
+                        <button type="submit" id="login-submit">Sign in</button>
+                    </form>
+                    <div class="links">
+                        <a href="/admin-panel/password-reset/" id="forgot-link">Forgot password?</a>
+                        <a href="/admin-panel/register/?next={{ next_url|urlencode }}" id="register-link">Create an administrator account</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function(){
+        const container = document.querySelector('[data-selected-role]');
+        if (!container) return;
+        const selectedRole = container.dataset.selectedRole || 'user';
+        const isAuthenticated = container.dataset.authenticated === 'true';
+        const googleEnabled = container.dataset.googleEnabled === 'true';
+        const googleUri = container.dataset.googleUri || '';
+        const optionNodes = Array.from(document.querySelectorAll('#role-name option'));
+        const errorNode = document.getElementById('role-error');
+        const roleLabels = { en:{user:'User',worker:'Worker',manager:'Manager',admin:'Admin'}, uk:{user:'Користувач',worker:'Працівник',manager:'Менеджер',admin:'Адмін'} };
+        const serverMap = {
+            'The username or password is incorrect.': 'Неправильний логін або пароль.',
+            'This account is currently inactive.': 'Цей обліковий запис зараз неактивний.',
+            'This account does not have access to the internal workspace.': 'Цей акаунт не має доступу до внутрішнього робочого простору.',
+            'Google sign-in is not configured yet. Create a .env file in the project root and add GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET.': 'Вхід через Google ще не налаштований. Створіть файл .env у корені проєкту й додайте GOOGLE_OAUTH_CLIENT_ID та GOOGLE_OAUTH_CLIENT_SECRET.',
+            'Google sign-in was canceled.': 'Вхід через Google було скасовано.',
+            'The Google session could not be verified. Please try again.': 'Не вдалося підтвердити сесію Google. Спробуйте ще раз.',
+            'Could not load the Google profile.': 'Не вдалося отримати профіль Google.',
+            'The Google account did not return an email address.': 'Google-акаунт не повернув email-адресу.',
+            'No account with this Google email was found in the system.': 'Для цього Google email акаунт у системі не знайдено.',
+            'The Google account does not have access to the selected role.': 'Google-акаунт не має доступу до вибраної ролі.',
+            'Google sign-in could not be completed.': 'Не вдалося завершити вхід через Google.'
+        };
+        const copy = {
+            en:{title:'Internal Access',eyebrow:'Internal access',heroTitle:'Choose how you want to continue',roleCardTitle:'Select a role',roleCardText:'Choose the role you want to open. The system will use it to send you to the correct section after sign-in.',roleLabel:'Role',roleSubmit:'Open role',workspaceTitle:'Sign in to your workspace',workspaceText:'Use your internal account and the system will redirect you straight to the selected workspace.',googleLabel:'Sign in with Google',divider:'or',username:'Username',password:'Password',loginSubmit:'Sign in',forgot:'Forgot password?',register:'Create an administrator account'},
+            uk:{title:'Внутрішній доступ',eyebrow:'Внутрішній доступ',heroTitle:'Оберіть, як хочете продовжити',roleCardTitle:'Вибір ролі',roleCardText:'Оберіть роль, яку хочете відкрити. Після входу система переведе вас у відповідний розділ.',roleLabel:'Роль',roleSubmit:'Відкрити роль',workspaceTitle:'Вхід у робочий простір',workspaceText:'Увійдіть під службовим акаунтом, і система одразу переведе вас до вибраного робочого розділу.',googleLabel:'Увійти через Google',divider:'або',username:'Логін',password:'Пароль',loginSubmit:'Увійти',forgot:'Забули пароль?',register:'Створити акаунт адміністратора'}
+        };
+        function subtitle(lang){
+            if (selectedRole === 'user') return lang === 'uk' ? 'Звичайний користувач переходить одразу на головну сторінку. Щоб продовжити як працівник, менеджер або адміністратор, оберіть потрібну роль і виконайте вхід.' : 'Regular visitors go straight to the homepage. To continue as a worker, manager, or administrator, choose the right role and sign in.';
+            return lang === 'uk' ? 'Обрана роль: ' + roleLabels.uk[selectedRole] + '. Після входу система відкриє відповідний робочий простір.' : 'Selected role: ' + roleLabels.en[selectedRole] + '. After sign-in, the system will open the matching workspace.';
+        }
+        function hint(lang){
+            if (selectedRole === 'user') return lang === 'uk' ? 'За замовчуванням ця опція відкриває публічну головну сторінку.' : 'The default option opens the public homepage.';
+            if (isAuthenticated) return lang === 'uk' ? 'Після входу система відкриє цей робочий простір: ' + roleLabels.uk[selectedRole] + '.' : 'After sign-in, the system will open this workspace: ' + roleLabels.en[selectedRole] + '.';
+            return lang === 'uk' ? 'Щоб увійти в режим "' + roleLabels.uk[selectedRole] + '", спочатку авторизуйтесь.' : 'To continue in the ' + roleLabels.en[selectedRole].toLowerCase() + ' workspace, please sign in first.';
+        }
+        function helper(lang){
+            if (googleEnabled) return lang === 'uk' ? 'Google OAuth увімкнено. Для входу акаунт уже має існувати з таким самим email або username.<br>Поточний redirect URI: <code>' + googleUri + '</code>' : 'Google OAuth is enabled. The account must already exist with the same email or username.<br>Current redirect URI: <code>' + googleUri + '</code>';
+            return lang === 'uk' ? 'Щоб увімкнути вхід через Google, створіть файл <code>.env</code> у корені проєкту й задайте <code>GOOGLE_OAUTH_CLIENT_ID</code>, <code>GOOGLE_OAUTH_CLIENT_SECRET</code> і за потреби <code>GOOGLE_OAUTH_REDIRECT_URI</code>.' : 'To enable Google sign-in, create a <code>.env</code> file in the project root and set <code>GOOGLE_OAUTH_CLIENT_ID</code>, <code>GOOGLE_OAUTH_CLIENT_SECRET</code>, and optionally <code>GOOGLE_OAUTH_REDIRECT_URI</code>.';
+        }
+        function applyLanguage(lang){
+            const selected = lang === 'uk' ? 'uk' : 'en';
+            document.title = copy[selected].title;
+            document.getElementById('role-eyebrow').textContent = copy[selected].eyebrow;
+            document.getElementById('role-title').textContent = copy[selected].heroTitle;
+            document.getElementById('role-subtitle').textContent = subtitle(selected);
+            document.getElementById('role-card-title').textContent = copy[selected].roleCardTitle;
+            document.getElementById('role-card-text').textContent = copy[selected].roleCardText;
+            document.getElementById('role-label').textContent = copy[selected].roleLabel;
+            document.getElementById('role-submit').textContent = copy[selected].roleSubmit;
+            document.getElementById('role-hint').textContent = hint(selected);
+            document.getElementById('workspace-title').textContent = copy[selected].workspaceTitle;
+            document.getElementById('workspace-text').textContent = copy[selected].workspaceText;
+            if (document.getElementById('google-label')) document.getElementById('google-label').textContent = copy[selected].googleLabel;
+            if (document.getElementById('google-helper')) document.getElementById('google-helper').innerHTML = helper(selected);
+            if (document.getElementById('divider-text')) document.getElementById('divider-text').textContent = copy[selected].divider;
+            document.getElementById('login-username-label').textContent = copy[selected].username;
+            document.getElementById('login-password-label').textContent = copy[selected].password;
+            document.getElementById('login-submit').textContent = copy[selected].loginSubmit;
+            document.getElementById('forgot-link').textContent = copy[selected].forgot;
+            document.getElementById('register-link').textContent = copy[selected].register;
+            optionNodes.forEach((option)=>{ option.textContent = roleLabels[selected][option.value] || option.textContent; });
+            if (errorNode) {
+                const enText = errorNode.dataset.enText || errorNode.textContent.trim();
+                errorNode.dataset.enText = enText;
+                errorNode.textContent = selected === 'uk' ? (serverMap[enText] || enText) : enText;
+            }
+        }
+        document.addEventListener('site-language-change', (event) => applyLanguage(event.detail.language));
+        applyLanguage(window.siteUiLanguage || document.documentElement.dataset.uiLang || 'en');
+    })();
+    </script>
+</body>
+</html>

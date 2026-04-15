@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Замовлення</title>
+    <style>
+        :root{--text:#173150;--muted:#61738c;--line:#dbe7ef;--shadow:rgba(16,27,44,.10)}
+        *{box-sizing:border-box}body{margin:0;color:var(--text);font:16px/1.6 "Segoe UI Variable","Trebuchet MS",sans-serif;background:radial-gradient(circle at top left,rgba(255,210,118,.35),transparent 24%),radial-gradient(circle at top right,rgba(185,231,246,.45),transparent 26%),linear-gradient(180deg,#fff8eb 0%,#eff7fb 100%)}
+        .page{width:min(1500px,calc(100% - 40px));margin:28px auto 40px;display:grid;gap:22px}
+        .hero,.toolbar,.quote{background:rgba(255,255,255,.94);border:1px solid rgba(219,231,239,.95);box-shadow:0 16px 30px rgba(16,27,44,.08);border-radius:28px}
+        .hero{padding:28px;background:linear-gradient(135deg,#16324f,#1d5f88 60%,#16907b);color:#fff}
+        .eyebrow{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+        h1,h2,p{margin:0}.hero h1{margin:14px 0 12px;font-size:clamp(30px,4vw,48px);line-height:1.02}.hero p{max-width:64ch;color:rgba(255,255,255,.84)}
+        .toolbar{padding:18px 20px}.toolbar label{display:grid;gap:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#5b6b84}
+        .search-input{width:100%;min-height:68px;padding:0 22px;border:1px solid var(--line);border-radius:22px;background:#fff;color:var(--text);font:inherit;font-size:21px;box-shadow:0 14px 24px var(--shadow)}
+        .quotes,.worker-orders{display:grid;gap:16px}.quote,.worker-order{padding:24px}.quote h2,.worker-order h2{font-size:22px;margin-bottom:10px}.quote p,.worker-order p{color:var(--muted)}.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.pill{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:999px;background:#f3f8fc;color:#516885;font-size:14px;font-weight:700}
+        .section-card{background:rgba(255,255,255,.94);border:1px solid rgba(219,231,239,.95);box-shadow:0 16px 30px rgba(16,27,44,.08);border-radius:28px;padding:24px 24px 28px}.section-card h2{margin:0 0 10px;font-size:26px}.order-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}.badge,.action{display:inline-flex;align-items:center;justify-content:center}.badge{min-height:32px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:800;background:#eef5ff;color:#2a5ea7}.action{min-height:44px;padding:0 16px;border-radius:12px;background:linear-gradient(135deg,#1790c7,#16907b);color:#fff;font-weight:800;text-decoration:none}.action:hover{opacity:.92}
+        .empty{padding:24px;border-radius:24px;background:#fff;color:var(--muted);text-align:center;border:1px solid rgba(19,34,56,.08)}
+        .quote.is-hidden{display:none}
+        @media (max-width:780px){.page{width:min(100%,calc(100% - 20px))}.search-input{min-height:58px;font-size:18px}}
+    </style>
+</head>
+<body>
+    {% include "includes/shared_headers.html" %}
+
+    <div class="page">
+        <section class="hero">
+            <span class="eyebrow" id="orders-rates-eyebrow">Вкладка замовлень</span>
+            <h1 id="orders-rates-title">Пошук курсу валют</h1>
+            <p id="orders-rates-text">Тут зібрані актуальні курси валют для швидкого перегляду. Працівник і менеджер працюють уже у своїх окремих вкладках.</p>
+        </section>
+
+        <section class="toolbar">
+            <label for="rate-search" id="orders-rates-label">Пошук курсу валют
+                <input id="rate-search" class="search-input" type="search" value="{{ search_query }}" placeholder="Введіть USD, EUR, UAH або пару на кшталт EUR USD" autocomplete="off">
+            </label>
+        </section>
+
+        <section class="quotes" id="rates-list">
+            {% for quote in cash_quotes %}
+                <article class="quote" data-search="{{ quote.pair|lower }} {{ quote.label|lower }} {{ quote.base_currency|lower }} {{ quote.quote_currency|lower }}">
+                    <h2>{{ quote.pair }} • {{ quote.label }}</h2>
+                    <p data-quote-line="{{ quote.buy_rate }}|{{ quote.sell_rate }}|{{ quote.mid_rate }}|{{ quote.decimals }}"></p>
+                    <div class="meta">
+                        <span class="pill">{{ quote.calculator_text }}</span>
+                        <span class="pill" data-quote-source="{{ quote.source }}"></span>
+                    </div>
+                </article>
+            {% endfor %}
+            <div class="empty" id="rates-empty" style="display:none;">Нічого не знайдено за цим запитом.</div>
+        </section>
+
+        <section class="section-card">
+            <h2 id="orders-worker-title">Робочі замовлення працівника</h2>
+            <p id="orders-worker-text">Активні заявки можна відкрити прямо звідси у вкладці працівника.</p>
+            <div class="worker-orders" style="margin-top:16px;">
+                {% for order in queue_orders %}
+                    <article class="worker-order">
+                        <div class="order-head">
+                            <div>
+                                <h2>#{{ order.id }} • {{ order.pair_label }}</h2>
+                                <p>{{ order.manager_note }}</p>
+                            </div>
+                            <span class="badge" data-status-code="{{ order.status }}"></span>
+                        </div>
+                        <div class="meta">
+                            <span class="pill" data-order-amount="{{ order.amount|floatformat:2 }}"></span>
+                            <span class="pill" data-order-rate="{{ order.rate|floatformat:4 }}"></span>
+                            <span class="pill" data-order-result="{{ order.result|floatformat:2 }}"></span>
+                            <span class="pill" data-order-time="{% if order.planned_for %}{{ order.planned_for|date:'d.m.Y H:i' }}{% endif %}"></span>
+                        </div>
+                        <div style="margin-top:16px;">
+                            <a class="action" href="/worker/?selected_order={{ order.id }}" data-open-order>Відкрити в роботі</a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty" id="orders-worker-empty">Активних замовлень для працівника ще немає.</div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <script>
+    (function(){
+        const searchInput = document.getElementById('rate-search');
+        const cards = Array.from(document.querySelectorAll('.quote'));
+        const empty = document.getElementById('rates-empty');
+        const copy = {
+            en:{eyebrow:'Orders tab',title:'Currency rate search',text:'Current exchange rates are collected here for quick review. Worker and manager now operate in their own separate tabs.',label:'Currency rate search',placeholder:'Type USD, EUR, UAH, or a pair like EUR USD',buy:'Buy',sell:'Sell',mid:'Mid',source:'Source',sourceBase:'Base currency',sourceCalc:'Calculated from core pairs',empty:'Nothing matched this search.',workerTitle:'Worker order queue',workerText:'Active orders can be opened here directly in the worker workspace.',amount:'Amount',rate:'Rate',result:'Result',time:'Time',timeUnset:'not scheduled',open:'Open in workspace',workerEmpty:'There are no active worker orders yet.',workerStatuses:{new:'New',confirmed:'Confirmed',in_progress:'In Progress',done:'Completed',canceled:'Canceled',error:'Error'}},
+            uk:{eyebrow:'Вкладка замовлень',title:'Пошук курсу валют',text:'Тут зібрані актуальні курси валют для швидкого перегляду. Працівник і менеджер працюють уже у своїх окремих вкладках.',label:'Пошук курсу валют',placeholder:'Введіть USD, EUR, UAH або пару на кшталт EUR USD',buy:'Купівля',sell:'Продаж',mid:'Середній',source:'Джерело',sourceBase:'Базова валюта',sourceCalc:'Розраховано з основних пар',empty:'Нічого не знайдено за цим запитом.',workerTitle:'Робочі замовлення працівника',workerText:'Активні заявки можна відкрити прямо звідси у вкладці працівника.',amount:'Сума',rate:'Курс',result:'Результат',time:'Час',timeUnset:'не задано',open:'Відкрити в роботі',workerEmpty:'Активних замовлень для працівника ще немає.',workerStatuses:{new:'Нове',confirmed:'Підтверджене',in_progress:'В процесі',done:'Виконане',canceled:'Скасоване',error:'Помилка'}}
+        };
+        function applyLanguage(lang){
+            const l = lang === 'uk' ? 'uk' : 'en';
+            document.title = l === 'uk' ? 'Замовлення' : 'Orders';
+            document.getElementById('orders-rates-eyebrow').textContent = copy[l].eyebrow;
+            document.getElementById('orders-rates-title').textContent = copy[l].title;
+            document.getElementById('orders-rates-text').textContent = copy[l].text;
+            document.getElementById('orders-rates-label').childNodes[0].nodeValue = copy[l].label;
+            searchInput.placeholder = copy[l].placeholder;
+            empty.textContent = copy[l].empty;
+            document.getElementById('orders-worker-title').textContent = copy[l].workerTitle;
+            document.getElementById('orders-worker-text').textContent = copy[l].workerText;
+            if (document.getElementById('orders-worker-empty')) document.getElementById('orders-worker-empty').textContent = copy[l].workerEmpty;
+            document.querySelectorAll('[data-quote-line]').forEach((node)=>{
+                const [buy,sell,mid,decimals] = node.dataset.quoteLine.split('|');
+                const digits = Number(decimals || 2);
+                node.textContent = copy[l].buy + ' ' + Number(buy).toFixed(digits) + ' • ' + copy[l].sell + ' ' + Number(sell).toFixed(digits) + ' • ' + copy[l].mid + ' ' + Number(mid).toFixed(digits);
+            });
+            document.querySelectorAll('[data-quote-source]').forEach((node)=>{
+                const raw = node.dataset.quoteSource;
+                const sourceMap = { 'Base currency': copy[l].sourceBase, 'Calculated from core pairs': copy[l].sourceCalc };
+                node.textContent = copy[l].source + ': ' + (sourceMap[raw] || raw);
+            });
+            document.querySelectorAll('[data-status-code]').forEach((node)=>{
+                const code = node.dataset.statusCode;
+                node.textContent = copy[l].workerStatuses[code] || code;
+            });
+            document.querySelectorAll('[data-order-amount]').forEach((node)=>{ node.textContent = copy[l].amount + ': ' + node.dataset.orderAmount; });
+            document.querySelectorAll('[data-order-rate]').forEach((node)=>{ node.textContent = copy[l].rate + ': ' + node.dataset.orderRate; });
+            document.querySelectorAll('[data-order-result]').forEach((node)=>{ node.textContent = copy[l].result + ': ' + node.dataset.orderResult; });
+            document.querySelectorAll('[data-order-time]').forEach((node)=>{ node.textContent = copy[l].time + ': ' + (node.dataset.orderTime || copy[l].timeUnset); });
+            document.querySelectorAll('[data-open-order]').forEach((node)=>{ node.textContent = copy[l].open; });
+        }
+        function applySearch(){
+            const value = (searchInput.value || '').trim().toLowerCase();
+            let visible = 0;
+            cards.forEach((card)=>{
+                const show = !value || (card.dataset.search || '').includes(value);
+                card.classList.toggle('is-hidden', !show);
+                if (show) visible += 1;
+            });
+            empty.style.display = visible ? 'none' : 'block';
+        }
+        searchInput.addEventListener('input', applySearch);
+        document.addEventListener('site-language-change', (event)=> applyLanguage(event.detail.language));
+        applyLanguage(window.siteUiLanguage || document.documentElement.dataset.uiLang || 'uk');
+        applySearch();
+    })();
+    </script>
+</body>
+</html>

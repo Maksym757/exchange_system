@@ -1,0 +1,338 @@
+﻿<style>
+.global-header-shell{
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+.global-header-shell a,
+.global-header-shell a:hover,
+.global-header-shell a:focus,
+.global-header-shell a:active,
+.global-header-shell a:visited{
+    text-decoration: none !important;
+}
+.global-topbar{
+    background: linear-gradient(180deg, #16324f, #102842);
+    border-bottom: 4px solid #ffd36b;
+    box-shadow: 0 16px 30px rgba(10, 20, 35, 0.12);
+}
+.global-topbar-wrap,
+.global-subnav-wrap{
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+}
+.global-topbar-wrap{
+    min-height: 96px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 24px;
+}
+.global-brand{
+    display: flex;
+    align-items: center;
+    min-height: 96px;
+    padding-right: 28px;
+    border-right: 1px solid rgba(255, 255, 255, 0.72);
+    color: #fff3bf;
+    text-decoration: none;
+    font: 900 clamp(24px, 2.2vw, 34px)/1 "Bahnschrift SemiBold", "Arial Narrow", "Trebuchet MS", sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.global-brand:hover,
+.global-brand:focus,
+.global-brand:active,
+.global-brand:visited{
+    color: #fff3bf;
+    text-decoration: none;
+}
+.global-contact{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #f6fbff;
+}
+.global-contact-links{
+    display: grid;
+    gap: 4px;
+}
+.global-contact-links a,
+.global-auth a{
+    color: #f6fbff;
+    font-weight: 800;
+}
+.global-contact-links a:hover,
+.global-auth a:hover{
+    color: #fff3bf;
+}
+.global-cta{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 0 28px;
+    border: 2px solid rgba(255, 255, 255, 0.88);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #27a5d9, #3799c7);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: 0 12px 24px rgba(21, 54, 76, 0.2);
+}
+.global-cta:hover{
+    background: linear-gradient(180deg, #58b7e4, #1b8fbe);
+    transform: translateY(-1px);
+}
+.global-cta-icon{
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    font-size: 18px;
+}
+.global-actions{
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: 24px;
+}
+.global-lang{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 16px;
+    background: #112338;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.global-lang button{
+    min-width: 42px;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 11px;
+    background: none;
+    color: rgba(246, 251, 255, 0.82);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+.global-lang .active{
+    background: #fff;
+    color: #1f2324;
+}
+.global-auth{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f6fbff;
+}
+.global-auth span{
+    color: rgba(255, 255, 255, 0.48);
+    font-weight: 700;
+}
+.global-subnav{
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid rgba(19, 34, 56, 0.08);
+    box-shadow: 0 10px 24px rgba(16, 27, 44, 0.08);
+    backdrop-filter: blur(14px);
+}
+.global-subnav-wrap{
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+.global-subnav-note{
+    color: #14213d;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+.global-subnav-nav{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.global-subnav-nav a{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    color: #5b6b7e;
+    font-size: 14px;
+    font-weight: 700;
+}
+.global-subnav-nav a:hover,
+.global-subnav-nav a.active{
+    background: rgba(17, 132, 111, 0.12);
+    color: #0d6455;
+}
+@media (max-width: 1080px){
+    .global-topbar-wrap{
+        grid-template-columns: 1fr 1fr;
+        padding: 14px 0 18px;
+    }
+    .global-brand{
+        min-height: 72px;
+    }
+    .global-contact,
+    .global-actions{
+        justify-self: stretch;
+    }
+}
+@media (max-width: 760px){
+    .global-topbar-wrap,
+    .global-subnav-wrap{
+        width: min(100%, calc(100% - 20px));
+    }
+    .global-topbar-wrap{
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    .global-brand{
+        min-height: auto;
+        padding: 0 0 14px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+    }
+    .global-contact,
+    .global-actions,
+    .global-subnav-wrap{
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .global-cta,
+    .global-auth,
+    .global-subnav-nav{
+        justify-content: center;
+    }
+}
+</style>
+<div class="global-header-shell">
+    <div class="global-topbar">
+        <div class="global-topbar-wrap">
+            <a class="global-brand" href="/" data-shared-copy="brandTitle">Currency Exchange System</a>
+            <div class="global-contact">
+                <div class="global-contact-links">
+                    <a href="/#benefits" data-shared-copy="servicesLink">Services</a>
+                    <a href="/#contact" data-shared-copy="supportLink">Support</a>
+                </div>
+            </div>
+            <a class="global-cta" href="/#calculator">
+                <span class="global-cta-icon" aria-hidden="true">&#9992;</span>
+                <span data-shared-copy="headerCta">Calculate Exchange</span>
+            </a>
+            <div class="global-actions">
+                <div class="global-lang" aria-label="Language switch">
+                    <button type="button" data-shared-lang="en" class="active">EN</button>
+                    <button type="button" data-shared-lang="uk">UA</button>
+                </div>
+                <div class="global-auth">
+                    <a href="/admin-panel/auth/" data-shared-copy="loginLink">Login</a>
+                    <span>|</span>
+                    <a href="/admin-panel/register/" data-shared-copy="registerLink">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="global-subnav">
+        <div class="global-subnav-wrap">
+            <div class="global-subnav-note" data-shared-copy="subnavNote">Online currency exchange service</div>
+            <nav class="global-subnav-nav" aria-label="Main navigation">
+                <a href="/" class="{% if request.path == '/' %}active{% endif %}" data-shared-copy="navHome">Home</a>
+                <a href="/orders/" class="{% if request.path == '/orders/' %}active{% endif %}" data-shared-copy="navOrders">Orders</a>
+                <a href="/worker/" class="{% if request.path == '/worker/' %}active{% endif %}" data-shared-copy="navWorker">Worker</a>
+                <a href="/manager/" class="{% if request.path == '/manager/' %}active{% endif %}" data-shared-copy="navManager">Manager</a>
+                <a href="/admin-panel/?role=admin" class="{% if request.path == '/admin-panel/' and 'role=admin' in request.get_full_path or '/admin-panel/register/' in request.path or '/admin-panel/password-reset/' in request.path or '/admin-panel/reset/' in request.path %}active{% endif %}" data-shared-copy="navAdmin">Admin</a>
+            </nav>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    const storageKey = "site-ui-lang";
+    const buttons = Array.from(document.querySelectorAll("[data-shared-lang]"));
+    const nodes = Array.from(document.querySelectorAll("[data-shared-copy]"));
+    if (!buttons.length || !nodes.length) return;
+
+    const copy = {
+        en: {
+            brandTitle: "Currency Exchange System",
+            servicesLink: "Services",
+            supportLink: "Support",
+            headerCta: "Calculate Exchange",
+            loginLink: "Login",
+            registerLink: "Register",
+            subnavNote: "Online currency exchange service",
+            navHome: "Home",
+            navOrders: "Orders",
+            navWorker: "Worker",
+            navManager: "Manager",
+            navAdmin: "Admin",
+        },
+        uk: {
+            brandTitle: "Система обміну валют",
+            servicesLink: "Послуги",
+            supportLink: "Підтримка",
+            headerCta: "Розрахувати обмін",
+            loginLink: "Вхід",
+            registerLink: "Реєстрація",
+            subnavNote: "Онлайн сервіс обміну валют",
+            navHome: "Головна",
+            navOrders: "Замовлення",
+            navWorker: "Працівник",
+            navManager: "Менеджер",
+            navAdmin: "Адмін",
+        }
+    };
+
+    const applyLanguage = (lang) => {
+        const selected = lang === "uk" ? "uk" : "en";
+        document.documentElement.lang = selected;
+        document.documentElement.dataset.uiLang = selected;
+        nodes.forEach((node) => {
+            const key = node.dataset.sharedCopy;
+            if (copy[selected][key]) {
+                node.textContent = copy[selected][key];
+            }
+        });
+        buttons.forEach((button) => {
+            const isActive = button.dataset.sharedLang === selected;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+        try {
+            localStorage.setItem(storageKey, selected);
+        } catch (error) {
+            void error;
+        }
+        document.dispatchEvent(new CustomEvent("site-language-change", { detail: { language: selected } }));
+    };
+
+    buttons.forEach((button) => {
+        button.addEventListener("click", function () {
+            applyLanguage(button.dataset.sharedLang);
+        });
+    });
+
+    let initialLanguage = "en";
+    try {
+        initialLanguage = localStorage.getItem(storageKey) || "en";
+    } catch (error) {
+        void error;
+    }
+    applyLanguage(initialLanguage);
+})();
+</script>
+

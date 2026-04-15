@@ -1,0 +1,48 @@
+﻿{% extends "admin/base_site.html" %}
+{% load i18n static log %}
+
+{% block extrastyle %}{{ block.super }}{% endblock %}
+{% block coltype %}colM{% endblock %}
+{% block bodyclass %}{{ block.super }} dashboard admin-dashboard{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block content_subtitle %}{% endblock %}
+
+{% block content %}
+<div class="admin-landing">
+    <section class="admin-hero-panel">
+        <div class="admin-hero-copy">
+            <span class="admin-eyebrow" id="admin-index-eyebrow">Admin workspace</span>
+            <h2 id="admin-index-title">Quick access to key admin tasks</h2>
+            <p id="admin-index-text">This dashboard brings together the main administrator tools: access control, role switching, recovery, and team contacts.</p>
+            <div class="admin-hero-actions">
+                <a class="admin-primary-action" href="/admin-panel/register/" id="admin-index-primary">Create administrator access</a>
+                <a class="admin-secondary-action" href="/admin/auth/user/" id="admin-index-secondary">Manage administrator accounts</a>
+            </div>
+        </div>
+        <div class="admin-hero-stats">
+            <div class="admin-stat-card"><strong>6</strong><span id="admin-index-stat-1">quick actions on the dashboard</span></div>
+            <div class="admin-stat-card"><strong>1</strong><span id="admin-index-stat-2">single access control hub</span></div>
+        </div>
+    </section>
+
+    <section class="admin-shortcuts" aria-label="Quick administrator actions" id="admin-index-aria">
+        <a class="admin-shortcut-card" href="/admin-panel/register/"><span class="admin-shortcut-dot"></span><div><h3 id="admin-shortcut-1-title">Create a new administrator</h3><p id="admin-shortcut-1-text">Create a new administrator account directly from the dashboard.</p></div></a>
+        <a class="admin-shortcut-card" href="/admin-panel/password-reset/"><span class="admin-shortcut-dot"></span><div><h3 id="admin-shortcut-2-title">Reset an administrator password</h3><p id="admin-shortcut-2-text">Open password recovery and send a reset link by email.</p></div></a>
+        <a class="admin-shortcut-card" href="/admin-panel/"><span class="admin-shortcut-dot"></span><div><h3 id="admin-shortcut-3-title">Switch service roles</h3><p id="admin-shortcut-3-text">Open role selection and continue in another internal workspace.</p></div></a>
+        <a class="admin-shortcut-card" href="/admin/auth/user/"><span class="admin-shortcut-dot"></span><div><h3 id="admin-shortcut-4-title">Review administrator accounts</h3><p id="admin-shortcut-4-text">Open the user list and keep administrator accounts under control.</p></div></a>
+        <a class="admin-shortcut-card" href="/#team"><span class="admin-shortcut-dot"></span><div><h3 id="admin-shortcut-5-title">Open team contacts from the homepage</h3><p id="admin-shortcut-5-text">Jump to the homepage and open the contact details for responsible team members.</p></div></a>
+    </section>
+</div>
+<script>
+(function(){
+  const copy={en:{eyebrow:'Admin workspace',title:'Quick access to key admin tasks',text:'This dashboard brings together the main administrator tools: access control, role switching, recovery, and team contacts.',primary:'Create administrator access',secondary:'Manage administrator accounts',stat1:'quick actions on the dashboard',stat2:'single access control hub',aria:'Quick administrator actions',s1t:'Create a new administrator',s1x:'Create a new administrator account directly from the dashboard.',s2t:'Reset an administrator password',s2x:'Open password recovery and send a reset link by email.',s3t:'Switch service roles',s3x:'Open role selection and continue in another internal workspace.',s4t:'Review administrator accounts',s4x:'Open the user list and keep administrator accounts under control.',s5t:'Open team contacts from the homepage',s5x:'Jump to the homepage and open the contact details for responsible team members.'},uk:{eyebrow:'Робочий простір адміністратора',title:'Швидкий доступ до ключових дій адміністратора',text:'Ця панель зібрала основні інструменти адміністратора: керування доступом, перемикання ролей, відновлення та командні контакти.',primary:'Створити доступ адміністратора',secondary:'Керувати акаунтами адміністраторів',stat1:'швидких дій на панелі',stat2:'єдиний центр керування доступом',aria:'Швидкі дії адміністратора',s1t:'Створити нового адміністратора',s1x:'Створіть новий акаунт адміністратора прямо з панелі.',s2t:'Скинути пароль адміністратора',s2x:'Відкрийте відновлення пароля та надішліть посилання на email.',s3t:'Перемкнути службові ролі',s3x:'Відкрийте вибір ролі й продовжуйте в іншому внутрішньому розділі.',s4t:'Переглянути акаунти адміністраторів',s4x:'Відкрийте список користувачів і контролюйте акаунти адміністраторів.',s5t:'Відкрити контакти команди з головної',s5x:'Перейдіть на головну й відкрийте контактні дані відповідальних членів команди.'}};
+  function applyLanguage(lang){const l=lang==='uk'?'uk':'en';document.getElementById('admin-index-eyebrow').textContent=copy[l].eyebrow;document.getElementById('admin-index-title').textContent=copy[l].title;document.getElementById('admin-index-text').textContent=copy[l].text;document.getElementById('admin-index-primary').textContent=copy[l].primary;document.getElementById('admin-index-secondary').textContent=copy[l].secondary;document.getElementById('admin-index-stat-1').textContent=copy[l].stat1;document.getElementById('admin-index-stat-2').textContent=copy[l].stat2;document.getElementById('admin-index-aria').setAttribute('aria-label',copy[l].aria);document.getElementById('admin-shortcut-1-title').textContent=copy[l].s1t;document.getElementById('admin-shortcut-1-text').textContent=copy[l].s1x;document.getElementById('admin-shortcut-2-title').textContent=copy[l].s2t;document.getElementById('admin-shortcut-2-text').textContent=copy[l].s2x;document.getElementById('admin-shortcut-3-title').textContent=copy[l].s3t;document.getElementById('admin-shortcut-3-text').textContent=copy[l].s3x;document.getElementById('admin-shortcut-4-title').textContent=copy[l].s4t;document.getElementById('admin-shortcut-4-text').textContent=copy[l].s4x;document.getElementById('admin-shortcut-5-title').textContent=copy[l].s5t;document.getElementById('admin-shortcut-5-text').textContent=copy[l].s5x;}
+  document.addEventListener('site-language-change',(e)=>applyLanguage(e.detail.language));
+  applyLanguage(window.siteUiLanguage||document.documentElement.dataset.uiLang||'en');
+})();
+</script>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
